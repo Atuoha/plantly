@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "499874925233",
+    "project_id": "plantly-37af9",
+    "storage_bucket": "plantly-37af9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499874925233:android:43d41f4d147082ea23f090",
+        "android_client_info": {
+          "package_name": "com.example.plantly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499874925233-7e2aa2l7bn5lf8c9le8t0loe9aneadnh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcQY8ndWErMlkKy3Jj3GR4gKA4Pfb7K2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499874925233-7e2aa2l7bn5lf8c9le8t0loe9aneadnh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
