@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class FontConstants {
   static const String fontFamily1 = "Inter";
-  static const String fontFamily2 = "Lexend_Deca";
+  static const String fontFamily2 = "LexendDeca";
 }
 
 class FontWeightManager {

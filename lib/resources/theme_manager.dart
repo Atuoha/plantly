@@ -51,8 +51,9 @@ ThemeData getLightTheme() {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSize.s8),
+          borderRadius: BorderRadius.circular(AppSize.s25),
         ),
+        padding: const EdgeInsets.symmetric(vertical:AppSize.s16),
         backgroundColor: primaryColor,
         disabledBackgroundColor: accentColor,
         disabledForegroundColor: Colors.white,
