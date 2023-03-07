@@ -29,13 +29,12 @@ TextStyle getRegularStyle({
   );
 }
 
-TextStyle getHeadingStyle({fontSize = FontSize.s28, required color}) {
+TextStyle getHeadingStyle({fontSize = FontSize.s35, required color}) {
   return TextStyle(
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w400,
     fontSize: fontSize,
     color: color,
-    fontFamily: FontConstants.fontFamily2,
-
+    fontFamily: FontConstants.fontFamily1,
   );
 }
 

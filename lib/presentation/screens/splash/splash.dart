@@ -42,8 +42,6 @@ class _SplashScreenState extends State<SplashScreen> {
         curve: Curves.easeIn,
       );
     });
-
-    print('Hello');
   }
 
   @override

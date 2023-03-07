@@ -41,7 +41,6 @@ dependencies:
   firebase_auth: ^4.2.9
   cloud_firestore: ^4.4.3
   firebase_storage: ^11.0.14
-  loading_widget: ^0.0.1
   flutter_bloc: ^8.1.2
   bloc: ^8.1.1
   equatable: ^2.0.5
@@ -51,6 +50,9 @@ dependencies:
   shared_preferences: ^2.0.18
   convex_bottom_bar: ^3.2.0
   smooth_page_indicator: ^1.0.1
+  validators: ^3.0.0
+  loading_animation_widget: ^1.2.0+4
+  is_first_run: ^1.0.0
 
 dev_dependencies:
   flutter_test:

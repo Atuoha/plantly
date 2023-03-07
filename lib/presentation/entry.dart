@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:loading_widget/main.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'utils/background_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,30 +16,30 @@ class EntryScreen extends StatefulWidget {
 }
 
 class _EntryScreenState extends State<EntryScreen> {
-  bool? isFirstRun;
-
   @override
   void initState() {
-    loadingAction();
+    _startRun();
     super.initState();
   }
 
-  void loadingAction() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool? isFirstRun =  prefs.getBool('isFirstRun');
-    if (!isFirstRun!) {
-      print('APP RAN BEFORE');
-      Timer(
-          const Duration(seconds: 5),
-          () => Navigator.of(context)
-              .pushReplacementNamed(RouteManager.homeScreen));
+  _startRun() async {
+    bool ifr = await IsFirstRun.isFirstRun();
+    var duration = const Duration(seconds: 3);
+    if (ifr != null && !ifr) {
+      // Timer(duration, _navigateToHomeOrAuth);
+      Timer(duration, _navigateToOnBoarding);
+
     } else {
-      print('APP NOT RAN BEFORE');
-      Timer(
-          const Duration(seconds: 5),
-          () => Navigator.of(context)
-              .pushReplacementNamed(RouteManager.splashScreen));
+      Timer(duration, _navigateToOnBoarding);
     }
+  }
+
+  void _navigateToHomeOrAuth() {
+    Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+  }
+
+  void _navigateToOnBoarding() {
+    Navigator.of(context).pushReplacementNamed(RouteManager.splashScreen);
   }
 
   @override

@@ -18,36 +18,17 @@ Future<void> main() async {
   runApp(const PlantApp());
 }
 
-class PlantApp extends StatefulWidget {
+class PlantApp extends StatelessWidget {
   const PlantApp({Key? key}) : super(key: key);
-
-  @override
-  State<PlantApp> createState() => _PlantAppState();
-}
-
-class _PlantAppState extends State<PlantApp> {
-  @override
-  void initState() {
-    initPreferences();
-
-    super.initState();
-  }
-
-  void initPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool? isFirstRun = prefs.getBool('isFirstRun');
-    if (isFirstRun == null) {
-      await prefs.setBool('isFirstRun', true);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: bgLiteColor,
-          systemNavigationBarIconBrightness: Brightness.dark),
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: bgLiteColor,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
     );
 
     return MaterialApp(

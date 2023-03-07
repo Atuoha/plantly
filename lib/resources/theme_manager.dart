@@ -71,15 +71,15 @@ ThemeData getLightTheme() {
       filled: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide:  BorderSide(color: liteGrey),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide:  const BorderSide(color: primaryColor),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide: const BorderSide(color: Colors.red),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
@@ -87,7 +87,7 @@ ThemeData getLightTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide: const BorderSide(color: primaryColor, width:2),
       ),
       labelStyle: getRegularStyle(color: Colors.black),
       hintStyle: getRegularStyle(color: Colors.grey),
