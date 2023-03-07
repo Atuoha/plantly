@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AppString {
   static const String appName = "Plantly";
   static const String splashTitle1 = "Take easy care\n of your plants with";
@@ -18,5 +20,8 @@ class AppString {
       "That's okay! Enter the email you remembered and proceed";
 
   static const String retrievePasswordTitle = "Retrieve password";
-  static const String retrievePasswordSubtitle = "Enter new password and confirm the password!";
+  static const String retrievePasswordSubtitle =
+      "Enter new password and confirm the password!";
+
+  static var userDoc = FirebaseFirestore.instance.collection('user');
 }
