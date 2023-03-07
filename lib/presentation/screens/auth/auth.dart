@@ -8,6 +8,7 @@ import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../../resources/string_manager.dart';
 import '../../../resources/values_manager.dart';
+import '../../widgets/action_wrap.dart';
 import '../../widgets/text_field.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -45,6 +46,22 @@ class _AuthScreenState extends State<AuthScreen> {
     Navigator.of(context).pushNamed(RouteManager.forgotPasswordScreen);
   }
 
+  void submitAuthForm() {
+    FocusScope.of(context).unfocus();
+    var valid = formKey.currentState!.validate();
+    if (!valid) {
+      return;
+    }
+
+    if (isSignInState) {
+      // sign in
+    } else {
+      // sign up
+    }
+  }
+
+  void googleAuthenticate() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,27 +71,30 @@ class _AuthScreenState extends State<AuthScreen> {
             horizontal: AppSize.s18,
           ),
           child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  isSignInState ? AppString.welcomeText : AppString.signupTitle,
-                  style: getHeadingStyle(
-                    color: fontColor,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    isSignInState
+                        ? AppString.welcomeText
+                        : AppString.signupTitle,
+                    style: getHeadingStyle(
+                      color: fontColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  isSignInState
-                      ? AppString.signInSubtitle
-                      : AppString.signUpSubTitle,
-                  style: getRegularStyle(
-                    color: fontColor,
+                  const SizedBox(height: 10),
+                  Text(
+                    isSignInState
+                        ? AppString.signInSubtitle
+                        : AppString.signUpSubTitle,
+                    textAlign: TextAlign.center,
+                    style: getRegularStyle(
+                      color: fontColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 50),
-                SingleChildScrollView(
-                  child: Form(
+                  const SizedBox(height: 50),
+                  Form(
                     key: formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,11 +127,11 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () => submitAuthForm(),
                           child: Text(isSignInState ? 'Sign In' : 'Sign Up'),
                         ),
                         const SizedBox(height: 10),
-                        buildWrap(
+                        ActionWrap(
                           title: 'Forgot your password?',
                           actionTitle: 'Restore',
                           action: navigateToForgotPassword,
@@ -128,7 +148,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: liteGrey,
                           ),
-                          onPressed: () {},
+                          onPressed: () => googleAuthenticate(),
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
@@ -149,7 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        buildWrap(
+                        ActionWrap(
                           title: isSignInState
                               ? "Don't have an account?"
                               : "Already have an account?",
@@ -158,49 +178,12 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ],
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // For navigating to forgot password and toggling signup/signin
-  Center buildWrap({
-    required String title,
-    required String actionTitle,
-    required Function action,
-  }) {
-    return Center(
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(
-            title,
-            style: getRegularStyle(color: accentColor),
-          ),
-          const SizedBox(width: 2),
-          Container(
-            padding: const EdgeInsets.only(bottom: 2),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: primaryColor),
-              ),
-            ),
-            child: GestureDetector(
-              onTap: () => action(),
-              child: Text(
-                actionTitle,
-                style: const TextStyle(
-                  color: primaryColor,
-                ),
-              ),
-            ),
-          )
-        ],
       ),
     );
   }

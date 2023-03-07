@@ -12,4 +12,11 @@ class AppString {
   static const String signupTitle = "Create account";
   static const String signUpSubTitle =
       "Sign up to explore plan care guide.\n It doesn't take a lot of time";
+
+  static const String forgotPasswordTitle = "Forgot password";
+  static const String forgotPasswordSubtitle =
+      "That's okay! Enter the email you remembered and proceed";
+
+  static const String retrievePasswordTitle = "Retrieve password";
+  static const String retrievePasswordSubtitle = "Enter new password and confirm the password!";
 }

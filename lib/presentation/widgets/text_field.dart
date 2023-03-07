@@ -34,7 +34,10 @@ class _TextFieldState extends State<KTextField> {
           ? TextInputAction.done
           : TextInputAction.next,
       controller: widget.controller,
-      obscureText: widget.field == Field.password ? widget.isObscured! : false,
+      obscureText:
+          widget.field == Field.password || widget.field == Field.password2
+              ? widget.isObscured!
+              : false,
       validator: (value) {
         if (widget.field == Field.fullname) {
           if (value!.isEmpty || value.length < 6) {
@@ -75,20 +78,21 @@ class _TextFieldState extends State<KTextField> {
         hintText: widget.hintText,
         label: Text(widget.label),
         prefixIcon: Icon(widget.prefixIcon),
-        suffix: widget.field == Field.password
-            ? widget.controller.text.isNotEmpty
-                ? GestureDetector(
-                    onTap: () => setState(() {
-                      widget.isObscured = !widget.isObscured!;
-                    }),
-                    child: Icon(
-                      widget.isObscured!
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                  )
-                : const SizedBox.shrink()
-            : const SizedBox.shrink(),
+        suffix:
+            widget.field == Field.password || widget.field == Field.password2
+                ? widget.controller.text.isNotEmpty
+                    ? GestureDetector(
+                        onTap: () => setState(() {
+                          widget.isObscured = !widget.isObscured!;
+                        }),
+                        child: Icon(
+                          widget.isObscured!
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                      )
+                    : const SizedBox.shrink()
+                : const SizedBox.shrink(),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
         ),

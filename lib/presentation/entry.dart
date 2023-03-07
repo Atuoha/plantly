@@ -26,9 +26,7 @@ class _EntryScreenState extends State<EntryScreen> {
     bool ifr = await IsFirstRun.isFirstRun();
     var duration = const Duration(seconds: 3);
     if (ifr != null && !ifr) {
-      // Timer(duration, _navigateToHomeOrAuth);
-      Timer(duration, _navigateToOnBoarding);
-
+      Timer(duration, _navigateToHomeOrAuth);
     } else {
       Timer(duration, _navigateToOnBoarding);
     }
