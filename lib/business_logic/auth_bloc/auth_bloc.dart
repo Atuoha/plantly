@@ -13,8 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
   late StreamSubscription authSubscription;
 
-  AuthBloc({required this.authRepository, required this.authSubscription})
-      : super(AuthState.unknown()) {
+  AuthBloc({required this.authRepository}) : super(AuthState.unknown()) {
     authSubscription = authRepository.user.listen((fbauth.User? user) {
       add(AuthStateChangeEvent(user: user));
     });

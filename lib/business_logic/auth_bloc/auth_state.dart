@@ -9,7 +9,7 @@ class AuthState extends Equatable {
   factory AuthState.unknown()=>const AuthState(authStatus: AuthStatus.unknown);
 
   @override
-  List<Object> get props => [authStatus, user!];
+  List<dynamic> get props => [authStatus, user];
 
   @override
   String toString() {

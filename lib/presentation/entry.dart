@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:is_first_run/is_first_run.dart';
+import 'package:plantly/presentation/presentation_export.dart';
+import '../business_logic/auth_bloc/auth_bloc.dart';
 import 'utils/background_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +36,15 @@ class _EntryScreenState extends State<EntryScreen> {
   }
 
   void _navigateToHomeOrAuth() {
-    Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+    if (context.read<AuthBloc>().state.user != null) {
+      Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const AuthScreen(signIn: false),
+        ),
+      );
+    }
   }
 
   void _navigateToOnBoarding() {
