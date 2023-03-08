@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:firebase_auth/firebase_auth.dart' as fbauth;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/custom_error.dart';
@@ -7,11 +7,11 @@ import '../resources/string_manager.dart';
 
 class AuthRepository {
   final FirebaseFirestore firebaseFirestore;
-  final fbAuth.FirebaseAuth firebaseAuth;
+  final fbauth.FirebaseAuth firebaseAuth;
 
   AuthRepository({required this.firebaseAuth, required this.firebaseFirestore});
 
-  Stream<fbAuth.User?> get user => firebaseAuth.userChanges();
+  Stream<fbauth.User?> get user => firebaseAuth.userChanges();
 
   // sign up
   Future<void> signup({
@@ -20,7 +20,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      fbAuth.UserCredential userCredential = await firebaseAuth
+      fbauth.UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
       await AppString.userDoc.doc(userCredential.user!.uid).set({
         'id': userCredential.user!.uid,
@@ -31,7 +31,7 @@ class AuthRepository {
             'https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0=',
         'auth_type': 'email/password'
       });
-    } on fbAuth.FirebaseAuthException catch (e) {
+    } on fbauth.FirebaseAuthException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
       throw CustomError(
@@ -47,7 +47,7 @@ class AuthRepository {
     try {
       await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-    } on fbAuth.FirebaseAuthException catch (e) {
+    } on fbauth.FirebaseAuthException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
       throw CustomError(
@@ -66,7 +66,7 @@ class AuthRepository {
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
 
-      final credential = fbAuth.GoogleAuthProvider.credential(
+      final credential = fbauth.GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
         accessToken: googleAuth.accessToken,
       );
@@ -82,7 +82,7 @@ class AuthRepository {
         'profileImg': user.photoURL,
         'auth_type': 'GoogleAuth',
       });
-    } on fbAuth.FirebaseAuthException catch (e) {
+    } on fbauth.FirebaseAuthException catch (e) {
       throw CustomError(code: e.code, errorMsg: e.message!, plugin: e.plugin);
     } catch (e) {
       throw CustomError(
