@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/constants/enums/fields.dart';
+import 'package:plantly/presentation/widgets/loading.dart';
 import 'package:plantly/resources/styles_manager.dart';
 
 import '../../../business_logic/google_auth/google_auth_cubit.dart';
 import '../../../business_logic/sign_in/sign_in_cubit.dart';
 import '../../../business_logic/sign_up/sign_up_cubit.dart';
 import '../../../constants/color.dart';
+import '../../../constants/enums/process_status.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../../resources/string_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../widgets/action_wrap.dart';
+import '../../widgets/error_dialog.dart';
 import '../../widgets/text_field.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -89,7 +92,37 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Center(
             child: SingleChildScrollView(
               child: MultiBlocListener(
-                listeners: [],
+                listeners: [
+                  // Sign in
+                  BlocListener<SignInCubit, SignInState>(
+                      listener: (context, state) {
+                    if (state.status == ProcessStatus.loading) {
+                      const LoadingWidget();
+                    } else if (state.status == ProcessStatus.error) {
+                      errorDialog(context: context, error: state.error);
+                    }
+                  }),
+
+                  // Sign up
+                  BlocListener<SignUpCubit, SignUpState>(
+                      listener: (context, state) {
+                    if (state.status == ProcessStatus.loading) {
+                      const LoadingWidget();
+                    } else if (state.status == ProcessStatus.error) {
+                      errorDialog(context: context, error: state.error);
+                    }
+                  }),
+
+                  // google Auth
+                  BlocListener<GoogleAuthCubit, GoogleAuthState>(
+                      listener: (context, state) {
+                    if (state.status == ProcessStatus.loading) {
+                      const LoadingWidget();
+                    } else if (state.status == ProcessStatus.error) {
+                      errorDialog(context: context, error: state.error);
+                    }
+                  }),
+                ],
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

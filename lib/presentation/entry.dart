@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:plantly/presentation/presentation_export.dart';
 import '../business_logic/auth_bloc/auth_bloc.dart';
+import '../constants/enums/auth_status.dart';
 import 'utils/background_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,15 +37,21 @@ class _EntryScreenState extends State<EntryScreen> {
   }
 
   void _navigateToHomeOrAuth() {
-    if (context.read<AuthBloc>().state.user != null) {
-      Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const AuthScreen(signIn: false),
-        ),
-      );
-    }
+    BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.authStatus == AuthStatus.authenticated) {
+          print('authenticated');
+          Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
+        } else {
+          print('unauthenticated');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const AuthScreen(signIn: false),
+            ),
+          );
+        }
+      },
+    );
   }
 
   void _navigateToOnBoarding() {

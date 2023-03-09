@@ -93,6 +93,21 @@ class AuthRepository {
     }
   }
 
+  // forgotPassword
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      await fbauth.FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on fbauth.FirebaseAuthException catch (e) {
+      throw CustomError(code: e.code, errorMsg: e.message!, plugin: e.plugin);
+    } on CustomError catch (e) {
+      throw CustomError(
+        code: 'Exception',
+        errorMsg: e.toString(),
+        plugin: 'firebase_exception/server_error',
+      );
+    }
+  }
+
   // sign out
   Future<void> signOut() async {
     try {
@@ -105,6 +120,4 @@ class AuthRepository {
       );
     }
   }
-
-  // forgotPassword
 }

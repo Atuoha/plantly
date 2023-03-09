@@ -34,6 +34,7 @@ class _TextFieldState extends State<KTextField> {
           ? TextInputAction.done
           : TextInputAction.next,
       controller: widget.controller,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText:
           widget.field == Field.password || widget.field == Field.password2
               ? widget.isObscured!
