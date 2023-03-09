@@ -20,52 +20,53 @@ class EntryScreen extends StatefulWidget {
 }
 
 class _EntryScreenState extends State<EntryScreen> {
-  @override
-  void initState() {
-    _startRun();
-    super.initState();
-  }
-
-  _startRun() async {
-    bool ifr = await IsFirstRun.isFirstRun();
-    var duration = const Duration(seconds: 3);
-    if (ifr != null && !ifr) {
-      Timer(duration, _navigateToHomeOrAuth);
-    } else {
-      Timer(duration, _navigateToOnBoarding);
-    }
-  }
-
-  void _navigateToHomeOrAuth() {
-    BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state.authStatus == AuthStatus.authenticated) {
-          print('authenticated');
-          Navigator.of(context).pushReplacementNamed(RouteManager.homeScreen);
-        } else {
-          print('unauthenticated');
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const AuthScreen(signIn: false),
-            ),
-          );
-        }
-      },
-    );
-  }
-
-  void _navigateToOnBoarding() {
-    Navigator.of(context).pushReplacementNamed(RouteManager.splashScreen);
-  }
+  bool isFirstRun = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BackgroundContainer(
-        begin: Alignment.topCenter,
-        stops: const [0.1, 1.0],
-        child: Center(
-          child: Image.asset('assets/images/app_name.png'),
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) async {
+          // checking first run
+          bool ifr = await IsFirstRun.isFirstRun();
+          if (ifr != null && !ifr) {
+            setState(() {
+              isFirstRun = false;
+            });
+          }
+          if (isFirstRun) {
+            Timer(
+              const Duration(milliseconds: 3),
+              () => Navigator.of(context).pushReplacementNamed(
+                RouteManager.splashScreen,
+              ),
+            );
+          } else {
+            if (state.authStatus == AuthStatus.authenticated) {
+              Timer(
+                const Duration(milliseconds: 3),
+                () => Navigator.of(context).pushReplacementNamed(
+                  RouteManager.homeScreen,
+                ),
+              );
+            } else {
+              Timer(
+                const Duration(milliseconds: 3),
+                () => Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => const AuthScreen(signIn: false),
+                  ),
+                ),
+              );
+            }
+          }
+        },
+        child: BackgroundContainer(
+          begin: Alignment.topCenter,
+          stops: const [0.1, 1.0],
+          child: Center(
+            child: Image.asset('assets/images/app_name.png'),
+          ),
         ),
       ),
     );

@@ -4,9 +4,7 @@ import 'package:equatable/equatable.dart';
 import '../../constants/enums/auth_status.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbauth;
 import '../../repositories/auth_repository.dart';
-
 part 'auth_event.dart';
-
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -22,11 +20,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (event.user != null) {
         emit(
           state.copyWith(
-              authStatus: AuthStatus.authenticated, user: event.user),
+            authStatus: AuthStatus.authenticated,
+            user: event.user,
+          ),
         );
       } else {
         emit(
-          state.copyWith(authStatus: AuthStatus.unauthenticated, user: null),
+          state.copyWith(
+            authStatus: AuthStatus.unauthenticated,
+            user: null,
+          ),
         );
       }
     });

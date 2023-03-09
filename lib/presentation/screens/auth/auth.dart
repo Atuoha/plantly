@@ -68,17 +68,28 @@ class _AuthScreenState extends State<AuthScreen> {
           );
     } else {
       // sign up
-      context.read<SignUpCubit>().signUp(
-            email: emailController.text,
-            password: passwordController.text,
-            fullName: fullNameController.text,
-          );
+      try {
+        context.read<SignUpCubit>().signUp(
+          email: emailController.text,
+          password: passwordController.text,
+          fullName: fullNameController.text,
+        );
+        Navigator.of(context).pushNamed(RouteManager.homeScreen);
+      } catch (e) {
+        print('Error');
+      }
+
     }
   }
 
   void googleAuthenticate() {
     // google authenticate
-    context.read<GoogleAuthCubit>().googleAuth();
+    try {
+      context.read<GoogleAuthCubit>().googleAuth();
+      Navigator.of(context).pushNamed(RouteManager.homeScreen);
+    } catch (e) {
+      print('Error');
+    }
   }
 
   @override

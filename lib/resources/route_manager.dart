@@ -1,4 +1,5 @@
 import '../presentation/presentation_export.dart';
+import '../presentation/screens/main/bottom_navigation.dart';
 
 class RouteManager {
   // Entry and Main
@@ -47,7 +48,7 @@ class RouteManager {
 
 final routes = {
   RouteManager.entryScreen: (context) => const EntryScreen(),
-  RouteManager.homeScreen: (context) => const HomeScreen(),
+  RouteManager.homeScreen: (context) => const BottomNavigationScreen(),
 
   // Splash
   RouteManager.splashScreen: (context) => const SplashScreen(),
