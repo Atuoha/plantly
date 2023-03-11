@@ -6,14 +6,14 @@ class User extends Equatable {
   final String fullname;
   final String password;
   final String authType;
-  final String profileUrl;
+  final String profileImg;
 
   const User({
     required this.email,
     required this.fullname,
     required this.password,
     required this.authType,
-    required this.profileUrl,
+    required this.profileImg,
   });
 
   factory User.initial() => const User(
@@ -21,7 +21,7 @@ class User extends Equatable {
         fullname: "",
         password: "",
         authType: "",
-        profileUrl: "",
+    profileImg: "",
       );
 
   factory User.fromDoc(DocumentSnapshot userDoc) {
@@ -30,9 +30,9 @@ class User extends Equatable {
     return User(
       email: userData['email'],
       fullname: userData['fullname'],
-      password: userData['password'],
-      authType: userData['authType'],
-      profileUrl: userData['profileUrl'],
+      password: "",
+      authType: userData['auth_type'],
+      profileImg: userData['profileImg'],
     );
   }
 
@@ -42,12 +42,12 @@ class User extends Equatable {
         fullname,
         password,
         authType,
-        profileUrl,
+    profileImg,
       ];
 
   @override
   String toString() {
-    return 'User{email: $email, fullname: $fullname, password: $password, authType: $authType, profileUrl: $profileUrl}';
+    return 'User{email: $email, fullname: $fullname, password: $password, authType: $authType, profileImg: $profileImg}';
   }
 
   User copyWith({
@@ -55,14 +55,14 @@ class User extends Equatable {
     String? fullname,
     String? password,
     String? authType,
-    String? profileUrl,
+    String? profileImg,
   }) {
     return User(
       email: email ?? this.email,
       fullname: fullname ?? this.fullname,
       password: password ?? this.password,
       authType: authType ?? this.authType,
-      profileUrl: profileUrl ?? this.profileUrl,
+      profileImg: profileImg ?? this.profileImg,
     );
   }
 }

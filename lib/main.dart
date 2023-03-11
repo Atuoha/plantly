@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:plantly/business_logic/exports.dart';
 import 'package:plantly/presentation/entry.dart';
 import 'package:plantly/repositories/auth_repository.dart';
+import 'package:plantly/repositories/profile_repository.dart';
 import 'package:plantly/resources/font_manager.dart';
 import 'package:plantly/resources/route_manager.dart';
 import 'package:plantly/resources/theme_manager.dart';
@@ -43,6 +44,12 @@ class PlantApp extends StatelessWidget {
             firebaseAuth: FirebaseAuth.instance,
             firebaseFirestore: FirebaseFirestore.instance,
           ),
+        ),
+        RepositoryProvider(
+          create: (context) => ProfileRepository(
+            firebaseAuth: FirebaseAuth.instance,
+            firebaseFirestore: FirebaseFirestore.instance,
+          ),
         )
       ],
       child: MultiBlocProvider(
@@ -66,6 +73,11 @@ class PlantApp extends StatelessWidget {
           BlocProvider(
             create: (context) => GoogleAuthCubit(
               authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ProfileCubit(
+              profileRepository: context.read<ProfileRepository>(),
             ),
           ),
         ],

@@ -11,6 +11,7 @@ const lightBg = Color(0xFFF6EFDD);
 const waterBg = Color(0xFFDEEFF5);
 const fontColor = Color(0XFF060041);
 const liteGrey = Color(0XFFEFFAF1);
+const searchBoxBg =  Color(0XFFF3F3F3);
 
 const sunIconBg = Color(0xFFF29A4D);
 const waterIconBg = Color(0xFF1F7CE9);

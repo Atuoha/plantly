@@ -23,5 +23,5 @@ class AppString {
   static const String retrievePasswordSubtitle =
       "Enter new password and confirm the password!";
 
-  static var userDoc = FirebaseFirestore.instance.collection('user');
+
 }

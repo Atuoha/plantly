@@ -71,7 +71,7 @@ ThemeData getLightTheme() {
       filled: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide:  BorderSide(color: liteGrey),
+        borderSide:  const BorderSide(color: liteGrey),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),

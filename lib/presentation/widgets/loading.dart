@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../../constants/color.dart';
+
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key? key}) : super(key: key);
+  const LoadingWidget({Key? key,this.size =70}) : super(key: key);
+  final double size;
 
   @override
   Widget build(BuildContext context) {
-    return LoadingAnimationWidget.waveDots(
-      color: Colors.blue,
-      size: 70,
+    return LoadingAnimationWidget.inkDrop(
+      color: primaryColor,
+      size: size,
     );
   }
 }

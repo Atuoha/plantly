@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fbauth;
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/custom_error.dart';
-import '../resources/string_manager.dart';
+import '../constants/firestore_refs.dart';
 
 class AuthRepository {
   final FirebaseFirestore firebaseFirestore;
@@ -22,7 +22,7 @@ class AuthRepository {
     try {
       fbauth.UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-      await AppString.userDoc.doc(userCredential.user!.uid).set({
+      await FirestoreRef.userRef.doc(userCredential.user!.uid).set({
         'id': userCredential.user!.uid,
         'fullname': fullName,
         'email': email,
@@ -76,7 +76,7 @@ class AuthRepository {
           await firebaseAuth.signInWithCredential(credential);
       final user = logCredentials.user;
 
-      AppString.userDoc.doc(user!.uid).set({
+      FirestoreRef.userRef.doc(user!.uid).set({
         'id': user.uid,
         'email': user.email,
         'fullname': user.displayName,
