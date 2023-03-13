@@ -29,7 +29,9 @@ TextStyle getRegularStyle({
   );
 }
 
-// regular fontstyle
+
+
+// Italics regular fontstyle
 TextStyle getItalicsRegularStyle({
   fontSize = FontSize.s14,
   required Color color,
@@ -43,6 +45,24 @@ TextStyle getItalicsRegularStyle({
     fontStyle:FontStyle.italic
   );
 }
+
+
+// Underline regular fontstyle
+TextStyle getUnderlineRegularStyle({
+  fontSize = FontSize.s14,
+  required Color color,
+  fontWeight = FontWeightManager.normal,
+}) {
+  return TextStyle(
+      fontSize:fontSize,
+      fontFamily:FontConstants.fontFamily2,
+      color:color,
+      fontWeight:fontWeight,
+      decoration: TextDecoration.underline
+  );
+}
+
+
 
 TextStyle getHeadingStyle({fontSize = FontSize.s35, required color}) {
   return TextStyle(
