@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/styles_manager.dart';
@@ -32,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<ProfileCubit>().fetchProfile(userId: userId);
   }
 
+  void removeFromList() {}
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -60,21 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundColor: primaryColor,
-              child: GestureDetector(
-                onTap: () => Navigator.of(context)
-                    .pushNamed(RouteManager.createPlantScreen),
-                child: const Icon(Icons.add, color: Colors.white),
-              ),
-            ),
-          )
-        ],
         title: Text(
-          'Your Plants',
+          'Hi, ${context.read<ProfileCubit>().state.user.fullname}',
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,
@@ -82,84 +70,182 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(
+          vertical: 15.0,
+          horizontal: 8.0,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SearchBox(),
+            Text(
+              'To-do list',
+              style: getMediumStyle(
+                color: fontColor,
+                fontSize: FontSize.s18,
+              ),
+            ),
             const SizedBox(height: 10),
-            Expanded(
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
-                ),
+            SizedBox(
+              height: size.height / 2.3,
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: List.generate(
                   10,
-                  (index) => Stack(
-                    children: [
-                      Container(
+                  (index) => Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Dismissible(
+                      background: Container(
+                        alignment: Alignment.centerRight,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSize.s20),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/f1.jpg'),
-                            fit: BoxFit.cover,
-                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.red,
+                        ),
+                        child: const Icon(
+                          Icons.delete_forever_outlined,
+                          color: Colors.white,
                         ),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: ClipRect(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-                            child: Container(
-                              height: size.height / 13,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(AppSize.s20),
-                                  bottomLeft: Radius.circular(AppSize.s20),
-                                ),
-                                // color: Colors.grey.withOpacity(0.5),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (DismissDirection direction) =>
+                          removeFromList(),
+                      key: const ValueKey('dissimible1'),
+                      confirmDismiss: (DismissDirection direction) =>
+                          showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Do you want to delete?'),
+                          content: const Text(
+                            'Delete this plant. Are you sure you want to continue',
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(10),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0,
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FittedBox(
-                                      child: Text(
-                                        'Crown Imperia',
-                                        style: getMediumStyle(
-                                          color: darkColor,
-                                          fontSize: FontSize.s18,
-                                        ),
+                              onPressed: () {},
+                              child: const Text('Yes'),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(10),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Cancel'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        height: 90,
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset('assets/images/f1.jpg'),
+                            ),
+                            const SizedBox(width: AppSize.s10),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FittedBox(
+                                    child: Text(
+                                      'Plaintain Wuve',
+                                      style: getMediumStyle(
+                                        color: fontColor,
+                                        fontSize: FontSize.s18,
                                       ),
                                     ),
-                                    // const SizedBox(height: 5),
-                                    Text(
-                                      'unsolicited gaps',
-                                      style: getItalicsRegularStyle(
-                                        color: Colors.grey.shade500,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  FittedBox(
+                                    child: Text(
+                                      'lorem ipsum and lo nota',
+                                      style: getRegularStyle(
+                                        color: fontColor,
+                                        fontSize: FontSize.s16,
                                       ),
-                                    )
-                                  ],
-                                ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            )
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Recently added',
+              style: getMediumStyle(
+                color: fontColor,
+                fontSize: FontSize.s18,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: size.height / 5.0,
+              child: ListView(
+                children: List.generate(
+                  10,
+                  (index) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: bgLiteColor,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      height: size.height / 5.1,
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.asset('assets/images/f1.jpg'),
+                          ),
+                          const SizedBox(width: AppSize.s10),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                FittedBox(
+                                  child: Text(
+                                    'Plaintain Wuve',
+                                    style: getMediumStyle(
+                                      color: fontColor,
+                                      fontSize: FontSize.s18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                FittedBox(
+                                  child: Text(
+                                    'lorem ipsum',
+                                    style: getRegularStyle(
+                                      color: fontColor,
+                                      fontSize: FontSize.s16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
