@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/styles_manager.dart';
@@ -6,6 +8,7 @@ import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
 import '../../../resources/font_manager.dart';
+import '../../../resources/route_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/searchbox.dart';
@@ -57,12 +60,16 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               backgroundColor: primaryColor,
-              child: Icon(Icons.add, color: Colors.white),
+              child: GestureDetector(
+                onTap: () => Navigator.of(context)
+                    .pushNamed(RouteManager.createPlantScreen),
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
             ),
           )
         ],
@@ -78,7 +85,81 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            SearchBox()
+            SearchBox(),
+            const SizedBox(height: 10),
+            Expanded(
+              child: GridView(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.8,
+                ),
+                children: List.generate(
+                  10,
+                  (index) => Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppSize.s20),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/f1.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        left: 0,
+                        child: ClipRect(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+                            child: Container(
+                              height: size.height / 13,
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  bottomRight: Radius.circular(AppSize.s20),
+                                  bottomLeft: Radius.circular(AppSize.s20),
+                                ),
+                                // color: Colors.grey.withOpacity(0.5),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18.0,
+                                  vertical: 10,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FittedBox(
+                                      child: Text(
+                                        'Crown Imperia',
+                                        style: getMediumStyle(
+                                          color: darkColor,
+                                          fontSize: FontSize.s18,
+                                        ),
+                                      ),
+                                    ),
+                                    // const SizedBox(height: 5),
+                                    Text(
+                                      'unsolicited gaps',
+                                      style: getItalicsRegularStyle(
+                                        color: Colors.grey.shade500,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

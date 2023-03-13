@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'font_manager.dart';
 
 TextStyle _getTextStyle(
-  double fontSize,
+    double fontSize,
   String fontFamily,
   Color color,
   FontWeight fontWeight,
@@ -26,6 +26,21 @@ TextStyle getRegularStyle({
     FontConstants.fontFamily1,
     color,
     fontWeight,
+  );
+}
+
+// regular fontstyle
+TextStyle getItalicsRegularStyle({
+  fontSize = FontSize.s14,
+  required Color color,
+  fontWeight = FontWeightManager.normal,
+}) {
+  return TextStyle(
+    fontSize:fontSize,
+    fontFamily:FontConstants.fontFamily2,
+    color:color,
+    fontWeight:fontWeight,
+    fontStyle:FontStyle.italic
   );
 }
 

@@ -4,10 +4,12 @@ import 'package:plantly/constants/enums/fields.dart';
 import 'package:plantly/presentation/widgets/loading.dart';
 import 'package:plantly/resources/styles_manager.dart';
 
+import '../../../business_logic/auth_bloc/auth_bloc.dart';
 import '../../../business_logic/google_auth/google_auth_cubit.dart';
 import '../../../business_logic/sign_in/sign_in_cubit.dart';
 import '../../../business_logic/sign_up/sign_up_cubit.dart';
 import '../../../constants/color.dart';
+import '../../../constants/enums/auth_status.dart';
 import '../../../constants/enums/process_status.dart';
 import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
@@ -68,28 +70,18 @@ class _AuthScreenState extends State<AuthScreen> {
           );
     } else {
       // sign up
-      try {
-        context.read<SignUpCubit>().signUp(
-          email: emailController.text,
-          password: passwordController.text,
-          fullName: fullNameController.text,
-        );
-        Navigator.of(context).pushNamed(RouteManager.homeScreen);
-      } catch (e) {
-        print('Error');
-      }
 
+      context.read<SignUpCubit>().signUp(
+            email: emailController.text,
+            password: passwordController.text,
+            fullName: fullNameController.text,
+          );
     }
   }
 
   void googleAuthenticate() {
     // google authenticate
-    try {
-      context.read<GoogleAuthCubit>().googleAuth();
-      Navigator.of(context).pushNamed(RouteManager.homeScreen);
-    } catch (e) {
-      print('Error');
-    }
+    context.read<GoogleAuthCubit>().googleAuth();
   }
 
   @override
@@ -133,6 +125,16 @@ class _AuthScreenState extends State<AuthScreen> {
                       errorDialog(context: context, error: state.error);
                     }
                   }),
+
+                  // Auth bLOC
+                  BlocListener<AuthBloc, AuthState>(
+                    listener: (context, state) {
+                      if (state.authStatus == AuthStatus.authenticated) {
+                        Navigator.of(context)
+                            .pushNamed(RouteManager.homeScreen);
+                      }
+                    },
+                  ),
                 ],
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

@@ -29,8 +29,9 @@ void errorDialog({required BuildContext context, required CustomError error}) {
           actions: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                padding:const  EdgeInsets.symmetric(horizontal: 5),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               onPressed: () => Navigator.of(context).pop(),
