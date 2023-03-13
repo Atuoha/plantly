@@ -98,11 +98,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         alignment: Alignment.centerRight,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          color: Colors.red,
+                          color: litePlantColor,
                         ),
-                        child: const Icon(
-                          Icons.delete_forever_outlined,
-                          color: Colors.white,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.delete_forever_outlined,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                       direction: DismissDirection.endToStart,
@@ -137,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: bgColor,
+                          color: plantBgColor,
                           borderRadius: BorderRadius.circular(15),
                         ),
                         height: 90,
@@ -201,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: bgLiteColor,
+                        color: recentPlantBg,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       height: size.height / 5.1,

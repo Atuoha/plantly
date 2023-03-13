@@ -99,65 +99,71 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                   (index) =>
 
                       // split this later
-                      Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSize.s20),
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/f1.jpg'),
-                            fit: BoxFit.cover,
+                      GestureDetector(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(RouteManager.singlePlantViewScreen),
+                    child: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(AppSize.s20),
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/f1.jpg'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        left: 0,
-                        child: ClipRect(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-                            child: Container(
-                              height: size.height / 13,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(AppSize.s20),
-                                  bottomLeft: Radius.circular(AppSize.s20),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          left: 0,
+                          child: ClipRect(
+                            child: BackdropFilter(
+                              filter:
+                                  ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+                              child: Container(
+                                height: size.height / 13,
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(AppSize.s20),
+                                    bottomLeft: Radius.circular(AppSize.s20),
+                                  ),
+                                  // color: Colors.grey.withOpacity(0.5),
                                 ),
-                                // color: Colors.grey.withOpacity(0.5),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0,
-                                  vertical: 10,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FittedBox(
-                                      child: Text(
-                                        'Crown Imperia',
-                                        style: getMediumStyle(
-                                          color: darkColor,
-                                          fontSize: FontSize.s18,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18.0,
+                                    vertical: 10,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      FittedBox(
+                                        child: Text(
+                                          'Crown Imperia',
+                                          style: getMediumStyle(
+                                            color: darkColor,
+                                            fontSize: FontSize.s18,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    // const SizedBox(height: 5),
-                                    Text(
-                                      'unsolicited gaps',
-                                      style: getItalicsRegularStyle(
-                                        color: Colors.grey.shade500,
-                                      ),
-                                    )
-                                  ],
+                                      // const SizedBox(height: 5),
+                                      Text(
+                                        'unsolicited gaps',
+                                        style: getItalicsRegularStyle(
+                                          color: Colors.grey.shade500,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

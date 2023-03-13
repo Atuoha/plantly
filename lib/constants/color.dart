@@ -15,3 +15,8 @@ const searchBoxBg =  Color(0XFFF3F3F3);
 
 const sunIconBg = Color(0xFFF29A4D);
 const waterIconBg = Color(0xFF1F7CE9);
+
+const plantBgColor = Color(0XFFD7F9DE);
+const litePlantColor = Color(0XFFEDFFF1);
+
+const recentPlantBg =  Color(0XFFEFFFF2);
