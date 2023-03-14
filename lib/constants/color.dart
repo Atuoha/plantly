@@ -20,3 +20,4 @@ const recentPlantBg =  Color(0XFFEFFFF2);
 
 const waterContainerBg = Color(0XFFDEEFF5);
 const sunContainerBg = Color(0XFFEFE8D6);
+const settingsBg  = Color(0XFFC9F9DF);
