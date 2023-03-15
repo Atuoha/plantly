@@ -5,14 +5,14 @@ import '../../constants/color.dart';
 import '../../resources/values_manager.dart';
 
 class ImagePickerUtil extends StatelessWidget {
-  const ImagePickerUtil(
-      {Key? key,
-      required this.icon,
-      required this.imageSource,
-      required this.pickImageFnc})
-      : super(key: key);
+  const ImagePickerUtil({
+    Key? key,
+    required this.icon,
+    required this.imageSource,
+    required this.pickImageFnc,
+  }) : super(key: key);
   final IconData icon;
-  final ImageSource imageSource;
+  final ImagePathSource imageSource;
   final Function pickImageFnc;
 
   @override

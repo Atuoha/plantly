@@ -52,6 +52,7 @@ dependencies:
   validators: ^3.0.0
   loading_animation_widget: ^1.2.0+4
   is_first_run: ^1.0.0
+  image_picker: ^0.8.7
 
 dev_dependencies:
   flutter_test:

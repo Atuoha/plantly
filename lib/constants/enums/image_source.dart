@@ -1,4 +1,4 @@
-enum ImageSource{
+enum ImagePathSource{
   camera,
   gallery,
 }

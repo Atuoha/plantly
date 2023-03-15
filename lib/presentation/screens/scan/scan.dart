@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plantly/presentation/widgets/success_dialog.dart';
 
 import '../../../constants/color.dart';
@@ -18,11 +21,33 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
+  final _picker = ImagePicker();
+  XFile? image;
+  File? selectedImage;
   bool isImageSelected = false;
 
-  void pickImage(ImageSource source) {
+  Future selectImage(ImagePathSource source) async {
+    XFile? pickedImage;
+    switch (source) {
+      case ImagePathSource.camera:
+        pickedImage = await _picker.pickImage(source: ImageSource.camera);
+        break;
+      case ImagePathSource.gallery:
+        pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+        break;
+    }
+
+    if (pickedImage == null) {
+      return;
+    } else {
+      setState(() {
+        isImageSelected = true;
+      });
+    }
+
     setState(() {
-      isImageSelected = true;
+      image = pickedImage;
+      selectedImage = File(pickedImage!.path);
     });
   }
 
@@ -103,16 +128,16 @@ class _ScanScreenState extends State<ScanScreen> {
                       Expanded(
                         child: ImagePickerUtil(
                           icon: Icons.camera_alt,
-                          pickImageFnc: pickImage,
-                          imageSource: ImageSource.camera,
+                          pickImageFnc: selectImage,
+                          imageSource: ImagePathSource.camera,
                         ),
                       ),
                       const SizedBox(width: 30),
                       Expanded(
                         child: ImagePickerUtil(
                           icon: Icons.photo,
-                          pickImageFnc: pickImage,
-                          imageSource: ImageSource.gallery,
+                          pickImageFnc: selectImage,
+                          imageSource: ImagePathSource.gallery,
                         ),
                       ),
                     ],
@@ -131,8 +156,8 @@ class _ScanScreenState extends State<ScanScreen> {
                           child: SizedBox(
                             height: 200,
                             width: double.infinity,
-                            child: Image.asset(
-                              'assets/images/f1.jpg',
+                            child: Image.file(
+                              File(image!.path),
                               fit: BoxFit.cover,
                             ),
                           ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:plantly/presentation/widgets/are_you_sure_dialog.dart';
 import 'package:plantly/resources/route_manager.dart';
 import 'package:plantly/resources/styles_manager.dart';
+import '../../../business_logic/auth_bloc/auth_bloc.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
@@ -28,6 +30,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  void triggerSignOut() {
+    context.read<AuthBloc>().add(SignOutEvent());
+  }
+
+  void signOut() {
+    areYouSureDialog(
+      title: 'Sign Out',
+      content: 'Are you sure you want to sign out?',
+      context: context,
+      action: triggerSignOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +55,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             fontSize: FontSize.s20,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => signOut(),
+            icon: const Icon(
+              Icons.logout,
+              color: primaryColor,
+            ),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18.0),
