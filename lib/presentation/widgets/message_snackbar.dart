@@ -4,10 +4,11 @@ import 'package:plantly/constants/color.dart';
 import '../../constants/enums/status.dart';
 import '../../resources/styles_manager.dart';
 
-void displaySnackBar(
-    {required Status status,
-    required String message,
-    required BuildContext context}) {
+void displaySnackBar({
+  required Status status,
+  required String message,
+  required BuildContext context,
+}) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       backgroundColor: status == Status.success ? primaryColor : Colors.red,
