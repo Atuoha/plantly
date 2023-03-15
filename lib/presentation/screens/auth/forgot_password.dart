@@ -43,8 +43,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     context.read<ForgotPasswordCubit>().forgotPassword(
-      email: emailController.text.trim(),
-    );
+          email: emailController.text.trim(),
+        );
   }
 
   @override
@@ -64,9 +64,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   } else if (state.status == ProcessStatus.error) {
                     errorDialog(context: context, error: state.error);
                   } else if (state.status == ProcessStatus.success) {
-                    successDialog(context: context,
-                      success: Success(title: 'Reset Link Sent',
-                          description: 'Reset link has been sent successfully'),);
+                    successDialog(
+                      context: context,
+                      success: Success(
+                        title: 'Reset Link Sent',
+                        description: 'Reset link has been sent successfully',
+                      ),
+                    );
                   }
                 },
                 child: Column(
