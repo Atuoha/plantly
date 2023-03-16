@@ -38,7 +38,7 @@ class ImagePickerUtil extends StatelessWidget {
             ),
           ),
           child: SizedBox(
-            height: 200,
+            height: 170,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

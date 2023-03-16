@@ -7,11 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/fields.dart';
 import '../../../constants/enums/image_source.dart';
+import '../../../constants/enums/status.dart';
 import '../../../models/success.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../utils/image_picker.dart';
+import '../../widgets/message_snackbar.dart';
 import '../../widgets/plant_task_text_field.dart';
 import '../../widgets/success_dialog.dart';
 
@@ -31,6 +33,9 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
   XFile? image;
   File? selectedImage;
   bool isImageSelected = false;
+
+  double waterLevel = 1;
+  double sunLevel = 1;
 
   Future selectImage(ImagePathSource source) async {
     XFile? pickedImage;
@@ -183,7 +188,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
                     ),
               const SizedBox(height: 20),
               Form(
-                key:formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -214,9 +219,69 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
                       controller: descriptionController,
                       title: 'Description',
                       textField: Field.description,
-                      maxLine: 8,
+                      maxLine: 6,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Water Level 💦',
+                          style: getRegularStyle(
+                            color: fontColor,
+                            fontSize: FontSize.s18,
+                          ),
+                        ),
+                        Text(
+                          'Sun Level 🌞',
+                          style: getRegularStyle(
+                            color: fontColor,
+                            fontSize: FontSize.s18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Slider(
+                            value: waterLevel,
+                            max: 5,
+                            min: 0,
+                            onChanged: (value) => setState(() {
+                              waterLevel = value;
+                            }),
+                            onChangeEnd: (value) {
+                              displaySnackBar(
+                                status: Status.success,
+                                message:
+                                    'Water level set to ${waterLevel.toStringAsFixed(0)}',
+                                context: context,
+                              );
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: Slider(
+                            value: sunLevel,
+                            max: 5,
+                            min: 0,
+                            onChanged: (value) => setState(() {
+                              sunLevel = value;
+                            }),
+                            onChangeEnd: (value) {
+                              displaySnackBar(
+                                status: Status.success,
+                                message:
+                                    'Sun level set to ${sunLevel.toStringAsFixed(0)}',
+                                context: context,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () => submitPlant(),
                       child: const Text('Add a plant'),
