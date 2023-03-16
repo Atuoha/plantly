@@ -152,7 +152,7 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                                       Text(
                                         'unsolicited gaps',
                                         style: getItalicsRegularStyle(
-                                          color: Colors.grey.shade500,
+                                          color: Colors.grey,
                                         ),
                                       )
                                     ],

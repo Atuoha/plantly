@@ -4,4 +4,6 @@ enum Field {
   phone,
   password,
   password2,
+  title,
+  description,
 }

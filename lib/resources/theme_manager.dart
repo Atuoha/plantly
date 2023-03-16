@@ -13,6 +13,7 @@ ThemeData getLightTheme() {
     primaryColorDark: Colors.white,
     backgroundColor: whiteColor,
     scaffoldBackgroundColor: whiteColor,
+    colorScheme: const ColorScheme.light(primary: primaryColor),
 
     // dialog theme
     dialogTheme: const DialogTheme(
@@ -53,7 +54,7 @@ ThemeData getLightTheme() {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSize.s25),
         ),
-        padding: const EdgeInsets.symmetric(vertical:AppSize.s16),
+        padding: const EdgeInsets.symmetric(vertical: AppSize.s16),
         backgroundColor: primaryColor,
         disabledBackgroundColor: accentColor,
         disabledForegroundColor: Colors.white,
@@ -71,11 +72,11 @@ ThemeData getLightTheme() {
       filled: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide:  const BorderSide(color: liteGrey),
+        borderSide: const BorderSide(color: liteGrey),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide:  const BorderSide(color: primaryColor),
+        borderSide: const BorderSide(color: primaryColor),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
@@ -87,7 +88,7 @@ ThemeData getLightTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor, width:2),
+        borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
       labelStyle: getRegularStyle(color: Colors.black),
       hintStyle: getRegularStyle(color: Colors.grey),
@@ -118,6 +119,9 @@ ThemeData getLightTheme() {
       ),
     ),
 
+
+
+
     // text theme
     textTheme: TextTheme(
       headline1: getMediumStyle(
@@ -133,8 +137,6 @@ ThemeData getLightTheme() {
       ),
     ),
 
-    colorScheme: ColorScheme.fromSwatch().copyWith(
-      secondary: Colors.grey,
-    ),
+
   );
 }

@@ -39,7 +39,7 @@ TextStyle getItalicsRegularStyle({
 }) {
   return TextStyle(
     fontSize:fontSize,
-    fontFamily:FontConstants.fontFamily2,
+    fontFamily:FontConstants.fontFamily1,
     color:color,
     fontWeight:fontWeight,
     fontStyle:FontStyle.italic

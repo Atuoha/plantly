@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../constants/color.dart';
+import '../../../constants/enums/fields.dart';
 import '../../../constants/enums/image_source.dart';
 import '../../../models/success.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
+import '../../../resources/values_manager.dart';
 import '../../utils/image_picker.dart';
+import '../../widgets/plant_task_text_field.dart';
 import '../../widgets/success_dialog.dart';
 
 class CreatePlantScreen extends StatefulWidget {
@@ -20,6 +23,10 @@ class CreatePlantScreen extends StatefulWidget {
 }
 
 class _CreatePlantScreenState extends State<CreatePlantScreen> {
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
   final _picker = ImagePicker();
   XFile? image;
   File? selectedImage;
@@ -54,6 +61,10 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
     setState(() {
       isImageSelected = false;
     });
+  }
+
+  void submitPlant() {
+    FocusScope.of(context).unfocus();
   }
 
   @override
@@ -96,80 +107,125 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
           vertical: 8.0,
           horizontal: 18.0,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Photo',
-              style: getMediumStyle(
-                color: fontColor,
-                fontSize: FontSize.s18,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Photo',
+                style: getRegularStyle(
+                  color: fontColor,
+                  fontSize: FontSize.s18,
+                ),
               ),
-            ),
-            const SizedBox(height: 5),
-            !isImageSelected
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: ImagePickerUtil(
-                          icon: Icons.camera_alt,
-                          title: 'Take a photo',
-                          pickImageFnc: selectImage,
-                          imageSource: ImagePathSource.camera,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      Expanded(
-                        child: ImagePickerUtil(
-                          icon: Icons.photo,
-                          title: 'Choose from gallery',
-                          pickImageFnc: selectImage,
-                          imageSource: ImagePathSource.gallery,
-                        ),
-                      ),
-                    ],
-                  )
-                : Stack(
-                    children: [
-                      DottedBorder(
-                        borderType: BorderType.RRect,
-                        strokeWidth: 2,
-                        dashPattern: const [3, 6],
-                        color: primaryColor,
-                        radius: const Radius.circular(12),
-                        padding: const EdgeInsets.all(6),
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(12),
+              const SizedBox(height: 5),
+              !isImageSelected
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ImagePickerUtil(
+                            icon: Icons.camera_alt,
+                            title: 'Take a photo',
+                            pickImageFnc: selectImage,
+                            imageSource: ImagePathSource.camera,
                           ),
-                          child: SizedBox(
-                            height: 200,
-                            width: double.infinity,
-                            child: Image.file(
-                              File(image!.path),
-                              fit: BoxFit.cover,
+                        ),
+                        const SizedBox(width: 30),
+                        Expanded(
+                          child: ImagePickerUtil(
+                            icon: Icons.photo,
+                            title: 'Choose from gallery',
+                            pickImageFnc: selectImage,
+                            imageSource: ImagePathSource.gallery,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        DottedBorder(
+                          borderType: BorderType.RRect,
+                          strokeWidth: 2,
+                          dashPattern: const [3, 6],
+                          color: primaryColor,
+                          radius: const Radius.circular(12),
+                          padding: const EdgeInsets.all(6),
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(12),
+                            ),
+                            child: SizedBox(
+                              height: 200,
+                              width: double.infinity,
+                              child: Image.file(
+                                File(image!.path),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: CircleAvatar(
-                          backgroundColor: primaryColor,
-                          child: IconButton(
-                            onPressed: () => resetIsImagePicked(),
-                            icon: const Icon(
-                              Icons.restart_alt,
-                              color: Colors.white,
+                        Positioned(
+                          bottom: 10,
+                          right: 10,
+                          child: CircleAvatar(
+                            backgroundColor: primaryColor,
+                            child: IconButton(
+                              onPressed: () => resetIsImagePicked(),
+                              icon: const Icon(
+                                Icons.restart_alt,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-          ],
+                        )
+                      ],
+                    ),
+              const SizedBox(height: 20),
+              Form(
+                key:formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Title',
+                      style: getRegularStyle(
+                        color: fontColor,
+                        fontSize: FontSize.s18,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    kTextField(
+                      controller: titleController,
+                      title: 'Title',
+                      textField: Field.title,
+                      maxLine: 1,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Description',
+                      style: getRegularStyle(
+                        color: fontColor,
+                        fontSize: FontSize.s18,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    kTextField(
+                      controller: descriptionController,
+                      title: 'Description',
+                      textField: Field.description,
+                      maxLine: 8,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => submitPlant(),
+                      child: const Text('Add a plant'),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
