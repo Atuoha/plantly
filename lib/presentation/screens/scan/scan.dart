@@ -65,7 +65,7 @@ class _ScanScreenState extends State<ScanScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: isImageSelected
           ? FloatingActionButton(
-              backgroundColor: primaryColor,
+              backgroundColor: accentColor,
               onPressed: () {},
               child: const Icon(
                 Icons.document_scanner_outlined,
@@ -93,7 +93,7 @@ class _ScanScreenState extends State<ScanScreen> {
             ),
             icon: const Icon(
               Icons.info,
-              color: primaryColor,
+              color: accentColor,
             ),
           )
         ],
@@ -128,6 +128,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       Expanded(
                         child: ImagePickerUtil(
                           icon: Icons.camera_alt,
+                          title: 'Take a photo',
                           pickImageFnc: selectImage,
                           imageSource: ImagePathSource.camera,
                         ),
@@ -136,6 +137,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       Expanded(
                         child: ImagePickerUtil(
                           icon: Icons.photo,
+                          title: 'Choose from gallery',
                           pickImageFnc: selectImage,
                           imageSource: ImagePathSource.gallery,
                         ),
@@ -146,7 +148,9 @@ class _ScanScreenState extends State<ScanScreen> {
                     children: [
                       DottedBorder(
                         borderType: BorderType.RRect,
-                        color: primaryColor,
+                        strokeWidth: 2,
+                        dashPattern: const [3, 6],
+                        color: accentColor,
                         radius: const Radius.circular(12),
                         padding: const EdgeInsets.all(6),
                         child: ClipRRect(
@@ -167,7 +171,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         bottom: 10,
                         right: 10,
                         child: CircleAvatar(
-                          backgroundColor: primaryColor,
+                          backgroundColor: accentColor,
                           child: IconButton(
                             onPressed: () => resetIsImagePicked(),
                             icon: const Icon(

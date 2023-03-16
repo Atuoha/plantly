@@ -30,6 +30,8 @@ ThemeData getLightTheme() {
       backgroundColor: whiteColor,
     ),
 
+
+
     // card theme
     cardTheme: CardTheme(
       color: whiteColor,
@@ -54,7 +56,7 @@ ThemeData getLightTheme() {
           borderRadius: BorderRadius.circular(AppSize.s25),
         ),
         padding: const EdgeInsets.symmetric(vertical:AppSize.s16),
-        backgroundColor: primaryColor,
+        backgroundColor: accentColor,
         disabledBackgroundColor: accentColor,
         disabledForegroundColor: Colors.white,
         textStyle: getRegularStyle(
@@ -75,7 +77,7 @@ ThemeData getLightTheme() {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide:  const BorderSide(color: primaryColor),
+        borderSide:  const BorderSide(color: accentColor),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
@@ -83,19 +85,19 @@ ThemeData getLightTheme() {
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor),
+        borderSide: const BorderSide(color: accentColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSize.s8),
-        borderSide: const BorderSide(color: primaryColor, width:2),
+        borderSide: const BorderSide(color: accentColor, width:2),
       ),
       labelStyle: getRegularStyle(color: Colors.black),
       hintStyle: getRegularStyle(color: Colors.grey),
       contentPadding: const EdgeInsets.all(AppPadding.p8),
       errorStyle: getRegularStyle(color: Colors.red),
-      suffixIconColor: primaryColor,
+      suffixIconColor: accentColor,
       suffixStyle: getRegularStyle(color: Colors.grey),
-      prefixIconColor: primaryColor,
+      prefixIconColor: accentColor,
       prefixStyle: getRegularStyle(color: Colors.grey),
     ),
 

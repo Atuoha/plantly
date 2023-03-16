@@ -31,7 +31,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(
             Icons.arrow_back,
-            color: primaryColor,
+            color: accentColor,
           ),
         ),
         title: Text(

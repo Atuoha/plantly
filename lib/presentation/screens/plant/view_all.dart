@@ -63,7 +63,7 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundColor: primaryColor,
+              backgroundColor: accentColor,
               child: GestureDetector(
                 onTap: () => Navigator.of(context)
                     .pushNamed(RouteManager.createPlantScreen),

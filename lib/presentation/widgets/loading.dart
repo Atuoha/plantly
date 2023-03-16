@@ -10,7 +10,7 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LoadingAnimationWidget.inkDrop(
-      color: primaryColor,
+      color: accentColor,
       size: size,
     );
   }

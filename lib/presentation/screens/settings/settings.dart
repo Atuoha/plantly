@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => signOut(),
             icon: const Icon(
               Icons.logout,
-              color: primaryColor,
+              color: accentColor,
             ),
           )
         ],
