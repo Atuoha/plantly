@@ -22,7 +22,7 @@ class ViewAllTasks extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundColor: accentColor,
+              backgroundColor: primaryColor,
               child: GestureDetector(
                 onTap: () => Navigator.of(context)
                     .pushNamed(RouteManager.createTaskScreen),

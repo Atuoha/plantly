@@ -27,7 +27,7 @@ class ImagePickerUtil extends StatelessWidget {
         borderType: BorderType.RRect,
         strokeWidth: 2,
         dashPattern: const [3, 6],
-        color: accentColor,
+        color: primaryColor,
         radius: const Radius.circular(12),
         padding: const EdgeInsets.all(6),
         child: Container(
@@ -46,14 +46,14 @@ class ImagePickerUtil extends StatelessWidget {
                   Icon(
                     icon,
                     size: AppSize.s50,
-                    color: accentColor,
+                    color: primaryColor,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     title,
                     textAlign: TextAlign.center,
                     style: getRegularStyle(
-                      color: accentColor,
+                      color: primaryColor,
                       fontSize: FontSize.s16,
                     ),
                   )

@@ -65,7 +65,7 @@ class _ScanScreenState extends State<ScanScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: isImageSelected
           ? FloatingActionButton(
-              backgroundColor: accentColor,
+              backgroundColor: primaryColor,
               onPressed: () {},
               child: const Icon(
                 Icons.document_scanner_outlined,
@@ -93,7 +93,7 @@ class _ScanScreenState extends State<ScanScreen> {
             ),
             icon: const Icon(
               Icons.info,
-              color: accentColor,
+              color: primaryColor,
             ),
           )
         ],
@@ -150,7 +150,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         borderType: BorderType.RRect,
                         strokeWidth: 2,
                         dashPattern: const [3, 6],
-                        color: accentColor,
+                        color: primaryColor,
                         radius: const Radius.circular(12),
                         padding: const EdgeInsets.all(6),
                         child: ClipRRect(
@@ -171,7 +171,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         bottom: 10,
                         right: 10,
                         child: CircleAvatar(
-                          backgroundColor: accentColor,
+                          backgroundColor: primaryColor,
                           child: IconButton(
                             onPressed: () => resetIsImagePicked(),
                             icon: const Icon(
