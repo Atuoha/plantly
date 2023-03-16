@@ -53,6 +53,7 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   is_first_run: ^1.0.0
   image_picker: ^0.8.7
+  table_calendar: ^3.0.8
 
 dev_dependencies:
   flutter_test:
