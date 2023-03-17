@@ -1,5 +1,7 @@
 import '../presentation/presentation_export.dart';
 import '../presentation/screens/main/bottom_navigation.dart';
+import '../presentation/screens/plant/edit.dart';
+import '../presentation/screens/tasks/edit.dart';
 
 class RouteManager {
   // Entry and Main
@@ -17,6 +19,7 @@ class RouteManager {
 
   // Plant
   static const String createPlantScreen = '/create_plant_screen';
+  static const String editPlantScreen = '/edit_plant_screen';
   static const String filterPlantScreen = '/filter_plant_screen';
   static const String singlePlantViewScreen = '/single_plant_view_screen';
   static const String viewAllPlantsScreen = '/view_all_plants_screen';
@@ -40,8 +43,9 @@ class RouteManager {
   static const String settingsScreen = '/settings_screen';
   static const String editSettingsScreen = '/edit_settings_screen';
 
-  // Scan
+  // Task
   static const String createTaskScreen = '/create_task_screen';
+  static const String editTaskScreen = '/edit_task_screen';
   static const String taskSingleViewScreen = '/task_single_view_screen';
   static const String viewAllTasks = '/view_all_tasks_screen';
 }
@@ -65,6 +69,7 @@ final routes = {
   RouteManager.singlePlantViewScreen: (context) => const SinglePlantScreen(),
   RouteManager.filterPlantScreen: (context) => const FilterPlant(),
   RouteManager.createPlantScreen: (context) => const CreatePlantScreen(),
+  // RouteManager.editPlantScreen: (context) => const EditPlantScreen(),
 
   // Preferences
   RouteManager.aboutScreen: (context) => const AboutScreen(),
@@ -89,4 +94,5 @@ final routes = {
   RouteManager.viewAllTasks: (context) => const ViewAllTasks(),
   RouteManager.taskSingleViewScreen: (context) => const TaskSingleView(),
   RouteManager.createTaskScreen: (context) => const CreateTask(),
+  // RouteManager.editTaskScreen: (context) => const EditTask(),
 };
