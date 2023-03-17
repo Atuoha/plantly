@@ -5,13 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plantly/business_logic/exports.dart';
 import 'package:plantly/presentation/entry.dart';
-import 'package:plantly/repositories/auth_repository.dart';
-import 'package:plantly/repositories/plant_repository.dart';
-import 'package:plantly/repositories/profile_repository.dart';
-import 'package:plantly/resources/font_manager.dart';
+import 'package:plantly/repositories/repositories.dart';
 import 'package:plantly/resources/route_manager.dart';
 import 'package:plantly/resources/theme_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/color.dart';
 import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +52,12 @@ class PlantApp extends StatelessWidget {
           create: (context) => PlantRepository(
             firebaseFirestore: FirebaseFirestore.instance,
           ),
-        )
+        ),
+        RepositoryProvider(
+          create: (context) => TaskRepository(
+            firebaseFirestore: FirebaseFirestore.instance,
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -88,6 +89,11 @@ class PlantApp extends StatelessWidget {
           BlocProvider(
             create: (context) => PlantCubit(
               plantRepository: context.read<PlantRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => TaskCubit(
+              taskRepository: context.read<TaskRepository>(),
             ),
           ),
         ],
