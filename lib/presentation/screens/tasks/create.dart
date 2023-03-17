@@ -172,6 +172,8 @@ class _CreateTaskState extends State<CreateTask> {
       repeat: currentRepeat,
     );
     model.addTask(task: task);
+
+    print('Am herer');
   }
 
   @override

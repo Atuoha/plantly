@@ -11,7 +11,7 @@ class TaskRepository {
 
   Future addTask({required Task task}) async {
     try {
-      FirestoreRef.todoRef.doc().set({
+      FirestoreRef.taskRef.doc().set({
         'id': task.id,
         'title': task.title,
         'description': task.description,
@@ -20,8 +20,10 @@ class TaskRepository {
         'repeat': task.repeat,
       });
     } on FirebaseException catch (e) {
+      print('Error from Firebase $e');
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
+      print('Error outside $e');
       throw CustomError(
           errorMsg: e.code,
           code: 'Firebase Exemption',
@@ -31,7 +33,7 @@ class TaskRepository {
 
   Future editTask({required Task task, required String id}) async {
     try {
-      FirestoreRef.todoRef.doc(id).update({
+      FirestoreRef.taskRef.doc(id).update({
         'id': task.id,
         'title': task.title,
         'description': task.description,
@@ -51,7 +53,7 @@ class TaskRepository {
 
   Future deleteTask({required String id}) async {
     try {
-      FirestoreRef.todoRef.doc(id).delete();
+      FirestoreRef.taskRef.doc(id).delete();
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
