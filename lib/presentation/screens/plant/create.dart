@@ -1,9 +1,12 @@
 import 'dart:io';
-
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:plantly/models/plant.dart';
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/fields.dart';
 import '../../../constants/enums/image_source.dart';
@@ -16,6 +19,7 @@ import '../../utils/image_picker.dart';
 import '../../widgets/message_snackbar.dart';
 import '../../widgets/plant_task_text_field.dart';
 import '../../widgets/success_dialog.dart';
+import 'package:path/path.dart' as path;
 
 class CreatePlantScreen extends StatefulWidget {
   const CreatePlantScreen({Key? key}) : super(key: key);
@@ -68,8 +72,42 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
     });
   }
 
-  void submitPlant() {
+  void submitPlant() async {
+    final model = context.read<PlantCubit>();
+
     FocusScope.of(context).unfocus();
+    var valid = formKey.currentState!.validate();
+    if (!valid) {
+      return;
+    }
+
+    // submit form
+    String? downloadLink;
+    try {
+      // upload image to storage
+      var storageRef = FirebaseStorage.instance
+          .ref('plants/${path.basename(selectedImage!.path)}');
+      await storageRef
+          .putFile(File(selectedImage!.path))
+          .whenComplete(() async {
+        downloadLink = await storageRef.getDownloadURL();
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error occurred');
+      }
+    }
+
+    Plant plant = Plant(
+      id: DateTime.now().toString(),
+      title: titleController.text.trim(),
+      description: descriptionController.text.trim(),
+      imgUrl: downloadLink!,
+      waterLevel: waterLevel,
+      sunLevel: sunLevel,
+    );
+
+    model.addPlant(plant: plant);
   }
 
   @override
