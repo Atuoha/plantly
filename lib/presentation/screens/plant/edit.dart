@@ -53,11 +53,14 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
   double sunLevel = 1;
 
   void setDetails() {
-    titleController.text = widget.plant['title'];
-    titleController.text = widget.plant['description'];
-    waterLevel = widget.plant['waterLevel'];
-    waterLevel = widget.plant['sunLevel'];
-    downloadLink = widget.plant['imgUrl'];
+    setState(() {
+      titleController.text = widget.plant['title'];
+      titleController.text = widget.plant['description'];
+      waterLevel = widget.plant['waterLevel'];
+      waterLevel = widget.plant['sunLevel'];
+      downloadLink = widget.plant['imgUrl'];
+    });
+
   }
 
   Future selectImage(ImagePathSource source) async {
@@ -186,14 +189,14 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
                 const LoadingWidget();
               } else if (state.status == ProcessStatus.success) {
                 kCoolAlert(
-                  message: '${titleController.text} successfully added!',
+                  message: '${titleController.text} successfully edited!',
                   context: context,
                   alert: CoolAlertType.success,
                 );
               } else if (state.status == ProcessStatus.error) {
                 kCoolAlert(
                   message:
-                      '${titleController.text} can not be added.\n ${state.error}!',
+                      '${titleController.text} can not be edited.\n ${state.error}!',
                   context: context,
                   alert: CoolAlertType.error,
                 );
