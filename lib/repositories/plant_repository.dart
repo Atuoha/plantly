@@ -28,7 +28,7 @@ class PlantRepository {
         'id': plant.id,
         'title': plant.title,
         'description': plant.description,
-        'imgUrl': plant.description,
+        'imgUrl': plant.imgUrl,
         'waterLevel': plant.waterLevel,
         'sunLevel': plant.sunLevel,
       });
