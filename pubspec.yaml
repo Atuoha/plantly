@@ -55,6 +55,7 @@ dependencies:
   image_picker: ^0.8.7
   table_calendar: ^3.0.8
   path: ^1.8.2
+  cool_alert: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -6,8 +6,8 @@ class Plant extends Equatable {
   final String title;
   final String description;
   final String imgUrl;
-  final double waterLevel;
-  final double sunLevel;
+  final int waterLevel;
+  final int sunLevel;
 
   const Plant({
     required this.id,
@@ -54,8 +54,8 @@ class Plant extends Equatable {
     String? title,
     String? description,
     String? imgUrl,
-    double? waterLevel,
-    double? sunLevel,
+    int? waterLevel,
+    int? sunLevel,
   }) {
     return Plant(
       id: id ?? this.id,

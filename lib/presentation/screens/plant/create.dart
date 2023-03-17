@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cool_alert/cool_alert.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -10,12 +11,16 @@ import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/fields.dart';
 import '../../../constants/enums/image_source.dart';
+import '../../../constants/enums/process_status.dart';
 import '../../../constants/enums/status.dart';
 import '../../../models/success.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../utils/image_picker.dart';
+import '../../widgets/cool_alert.dart';
+import '../../widgets/error_dialog.dart';
+import '../../widgets/loading.dart';
 import '../../widgets/message_snackbar.dart';
 import '../../widgets/plant_task_text_field.dart';
 import '../../widgets/success_dialog.dart';
@@ -81,6 +86,14 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       return;
     }
 
+    if (!isImageSelected) {
+      displaySnackBar(
+        status: Status.error,
+        message: 'Opps! Plant image is needed',
+        context: context,
+      );
+    }
+
     // submit form
     String? downloadLink;
     try {
@@ -103,11 +116,20 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
       imgUrl: downloadLink!,
-      waterLevel: waterLevel,
-      sunLevel: sunLevel,
+      waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
+      sunLevel: int.parse(waterLevel.toStringAsFixed(0)),
     );
 
     model.addPlant(plant: plant);
+    resetForm();
+  }
+
+  void resetForm() {
+    titleController.clear();
+    descriptionController.clear();
+    setState(() {
+      isImageSelected = false;
+    });
   }
 
   @override
@@ -151,183 +173,203 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
           horizontal: 18.0,
         ),
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Photo',
-                style: getRegularStyle(
-                  color: fontColor,
-                  fontSize: FontSize.s18,
+          child: BlocListener<PlantCubit, PlantState>(
+            listener: (context, state) {
+              if (state.status == ProcessStatus.loading) {
+                const LoadingWidget();
+              } else if (state.status == ProcessStatus.success) {
+                kCoolAlert(
+                  message: '${titleController.text} successfully added!',
+                  context: context,
+                  alert: CoolAlertType.success,
+                );
+              } else if (state.status == ProcessStatus.error) {
+                kCoolAlert(
+                  message:
+                      '${titleController.text} can not be added.\n ${state.error}!',
+                  context: context,
+                  alert: CoolAlertType.error,
+                );
+              }
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Photo',
+                  style: getRegularStyle(
+                    color: fontColor,
+                    fontSize: FontSize.s18,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              !isImageSelected
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ImagePickerUtil(
-                            icon: Icons.camera_alt,
-                            title: 'Take a photo',
-                            pickImageFnc: selectImage,
-                            imageSource: ImagePathSource.camera,
-                          ),
-                        ),
-                        const SizedBox(width: 30),
-                        Expanded(
-                          child: ImagePickerUtil(
-                            icon: Icons.photo,
-                            title: 'Choose from gallery',
-                            pickImageFnc: selectImage,
-                            imageSource: ImagePathSource.gallery,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Stack(
-                      children: [
-                        DottedBorder(
-                          borderType: BorderType.RRect,
-                          strokeWidth: 2,
-                          dashPattern: const [3, 6],
-                          color: primaryColor,
-                          radius: const Radius.circular(12),
-                          padding: const EdgeInsets.all(6),
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(12),
+                const SizedBox(height: 5),
+                !isImageSelected
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: ImagePickerUtil(
+                              icon: Icons.camera_alt,
+                              title: 'Take a photo',
+                              pickImageFnc: selectImage,
+                              imageSource: ImagePathSource.camera,
                             ),
-                            child: SizedBox(
-                              height: 200,
-                              width: double.infinity,
-                              child: Image.file(
-                                File(image!.path),
-                                fit: BoxFit.cover,
+                          ),
+                          const SizedBox(width: 30),
+                          Expanded(
+                            child: ImagePickerUtil(
+                              icon: Icons.photo,
+                              title: 'Choose from gallery',
+                              pickImageFnc: selectImage,
+                              imageSource: ImagePathSource.gallery,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          DottedBorder(
+                            borderType: BorderType.RRect,
+                            strokeWidth: 2,
+                            dashPattern: const [3, 6],
+                            color: primaryColor,
+                            radius: const Radius.circular(12),
+                            padding: const EdgeInsets.all(6),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                              child: SizedBox(
+                                height: 200,
+                                width: double.infinity,
+                                child: Image.file(
+                                  File(image!.path),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          right: 10,
-                          child: CircleAvatar(
-                            backgroundColor: primaryColor,
-                            child: IconButton(
-                              onPressed: () => resetIsImagePicked(),
-                              icon: const Icon(
-                                Icons.restart_alt,
-                                color: Colors.white,
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: CircleAvatar(
+                              backgroundColor: primaryColor,
+                              child: IconButton(
+                                onPressed: () => resetIsImagePicked(),
+                                icon: const Icon(
+                                  Icons.restart_alt,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-              const SizedBox(height: 20),
-              Form(
-                key: formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Title',
-                      style: getRegularStyle(
-                        color: fontColor,
-                        fontSize: FontSize.s18,
+                          )
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    kTextField(
-                      controller: titleController,
-                      title: 'Title',
-                      textField: Field.title,
-                      maxLine: 1,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Description',
-                      style: getRegularStyle(
-                        color: fontColor,
-                        fontSize: FontSize.s18,
+                const SizedBox(height: 20),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Title',
+                        style: getRegularStyle(
+                          color: fontColor,
+                          fontSize: FontSize.s18,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    kTextField(
-                      controller: descriptionController,
-                      title: 'Description',
-                      textField: Field.description,
-                      maxLine: 6,
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Water Level 💦',
-                          style: getRegularStyle(
-                            color: fontColor,
-                            fontSize: FontSize.s18,
-                          ),
+                      const SizedBox(height: 10),
+                      kTextField(
+                        controller: titleController,
+                        title: 'Title',
+                        textField: Field.title,
+                        maxLine: 1,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Description',
+                        style: getRegularStyle(
+                          color: fontColor,
+                          fontSize: FontSize.s18,
                         ),
-                        Text(
-                          'Sun Level 🌞',
-                          style: getRegularStyle(
-                            color: fontColor,
-                            fontSize: FontSize.s18,
+                      ),
+                      const SizedBox(height: 10),
+                      kTextField(
+                        controller: descriptionController,
+                        title: 'Description',
+                        textField: Field.description,
+                        maxLine: 6,
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Water Level 💦',
+                            style: getRegularStyle(
+                              color: fontColor,
+                              fontSize: FontSize.s18,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Slider(
-                            value: waterLevel,
-                            max: 5,
-                            min: 0,
-                            onChanged: (value) => setState(() {
-                              waterLevel = value;
-                            }),
-                            onChangeEnd: (value) {
-                              displaySnackBar(
-                                status: Status.success,
-                                message:
-                                    'Water level set to ${waterLevel.toStringAsFixed(0)}',
-                                context: context,
-                              );
-                            },
+                          Text(
+                            'Sun Level 🌞',
+                            style: getRegularStyle(
+                              color: fontColor,
+                              fontSize: FontSize.s18,
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: sunLevel,
-                            max: 5,
-                            min: 0,
-                            onChanged: (value) => setState(() {
-                              sunLevel = value;
-                            }),
-                            onChangeEnd: (value) {
-                              displaySnackBar(
-                                status: Status.success,
-                                message:
-                                    'Sun level set to ${sunLevel.toStringAsFixed(0)}',
-                                context: context,
-                              );
-                            },
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Slider(
+                              value: waterLevel,
+                              max: 5,
+                              min: 0,
+                              onChanged: (value) => setState(() {
+                                waterLevel = value;
+                              }),
+                              onChangeEnd: (value) {
+                                displaySnackBar(
+                                  status: Status.success,
+                                  message:
+                                      'Water level set to ${waterLevel.toStringAsFixed(0)}',
+                                  context: context,
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () => submitPlant(),
-                      child: const Text('Add a plant'),
-                    )
-                  ],
+                          Expanded(
+                            child: Slider(
+                              value: sunLevel,
+                              max: 5,
+                              min: 0,
+                              onChanged: (value) => setState(() {
+                                sunLevel = value;
+                              }),
+                              onChangeEnd: (value) {
+                                displaySnackBar(
+                                  status: Status.success,
+                                  message:
+                                      'Sun level set to ${sunLevel.toStringAsFixed(0)}',
+                                  context: context,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => submitPlant(),
+                        child: const Text('Add a plant'),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
