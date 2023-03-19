@@ -11,19 +11,18 @@ class TaskRepository {
 
   Future addTask({required Task task}) async {
     try {
-      FirestoreRef.taskRef.doc().set({
+      await FirestoreRef.taskRef.doc().set({
         'id': task.id,
         'title': task.title,
         'description': task.description,
         'plantId': task.plantId,
         'date': task.date,
         'repeat': task.repeat,
+        'userId': task.userId,
       });
     } on FirebaseException catch (e) {
-      print('Error from Firebase $e');
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
-      print('Error outside $e');
       throw CustomError(
           errorMsg: e.code,
           code: 'Firebase Exemption',
@@ -33,13 +32,14 @@ class TaskRepository {
 
   Future editTask({required Task task, required String id}) async {
     try {
-      FirestoreRef.taskRef.doc(id).update({
+      await FirestoreRef.taskRef.doc(id).update({
         'id': task.id,
         'title': task.title,
         'description': task.description,
         'plantId': task.plantId,
         'date': task.date,
         'repeat': task.repeat,
+        'userId': task.userId,
       });
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
@@ -53,7 +53,7 @@ class TaskRepository {
 
   Future deleteTask({required String id}) async {
     try {
-      FirestoreRef.taskRef.doc(id).delete();
+      await FirestoreRef.taskRef.doc(id).delete();
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {

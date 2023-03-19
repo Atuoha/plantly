@@ -9,28 +9,16 @@ class PlantRepository {
 
   PlantRepository({required this.firebaseFirestore});
 
-  Future uploadPlantImage() async {
-    try {
-      //  upload
-    } on FirebaseException catch (e) {
-      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
-    } on CustomError catch (e) {
-      throw CustomError(
-          errorMsg: e.code,
-          code: 'Firebase Exemption',
-          plugin: 'Firebase error/flutter');
-    }
-  }
-
   Future addPlant({required Plant plant}) async {
     try {
-      FirestoreRef.plantRef.doc().set({
+      await FirestoreRef.plantRef.doc().set({
         'id': plant.id,
         'title': plant.title,
         'description': plant.description,
         'imgUrl': plant.imgUrl,
         'waterLevel': plant.waterLevel,
         'sunLevel': plant.sunLevel,
+        'userId': plant.userId,
       });
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
@@ -44,13 +32,14 @@ class PlantRepository {
 
   Future editPlant({required Plant plant, required String id}) async {
     try {
-      FirestoreRef.plantRef.doc(id).update({
+      await FirestoreRef.plantRef.doc(id).update({
         'id': plant.id,
         'title': plant.title,
         'description': plant.description,
         'imgUrl': plant.description,
         'waterLevel': plant.waterLevel,
         'sunLevel': plant.sunLevel,
+        'userId': plant.userId,
       });
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
@@ -64,7 +53,7 @@ class PlantRepository {
 
   Future deletePlant({required String id}) async {
     try {
-      FirestoreRef.plantRef.doc(id).delete();
+      await FirestoreRef.plantRef.doc(id).delete();
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {

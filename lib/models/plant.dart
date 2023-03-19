@@ -8,6 +8,7 @@ class Plant extends Equatable {
   final String imgUrl;
   final int waterLevel;
   final int sunLevel;
+  final String userId;
 
   const Plant({
     required this.id,
@@ -16,6 +17,7 @@ class Plant extends Equatable {
     required this.imgUrl,
     required this.waterLevel,
     required this.sunLevel,
+    required this.userId,
   });
 
   factory Plant.initial() => const Plant(
@@ -25,6 +27,7 @@ class Plant extends Equatable {
         imgUrl: '',
         waterLevel: 0,
         sunLevel: 0,
+    userId: '',
       );
 
   factory Plant.fromJson(DocumentSnapshot plantDoc) {
@@ -37,16 +40,17 @@ class Plant extends Equatable {
       imgUrl: plant['imgUrl'],
       waterLevel: plant['waterLevel'],
       sunLevel: plant['sunLevel'],
+      userId: plant['userId'],
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, title, description, imgUrl, waterLevel, sunLevel];
+      [id, title, description, imgUrl, waterLevel, sunLevel,userId,];
 
   @override
   String toString() {
-    return 'Plant{id: $id, title: $title, description: $description, imgUrl: $imgUrl, waterLevel: $waterLevel, sunLevel: $sunLevel}';
+    return 'Plant{id: $id, title: $title, description: $description, imgUrl: $imgUrl, waterLevel: $waterLevel, sunLevel: $sunLevel,userId:$userId}';
   }
 
   Plant copyWith({
@@ -56,6 +60,7 @@ class Plant extends Equatable {
     String? imgUrl,
     int? waterLevel,
     int? sunLevel,
+    String? userId,
   }) {
     return Plant(
       id: id ?? this.id,
@@ -64,6 +69,7 @@ class Plant extends Equatable {
       imgUrl: imgUrl ?? this.imgUrl,
       waterLevel: waterLevel ?? this.waterLevel,
       sunLevel: sunLevel ?? this.sunLevel,
+      userId: userId?? this.userId,
     );
   }
 }

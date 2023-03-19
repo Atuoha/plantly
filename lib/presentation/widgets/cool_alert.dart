@@ -6,6 +6,7 @@ Future kCoolAlert({
   required String message,
   required BuildContext context,
   required CoolAlertType alert,
+  Function? action,
 }) {
   return CoolAlert.show(
     backgroundColor: primaryColor,
@@ -13,5 +14,6 @@ Future kCoolAlert({
     context: context,
     type: alert,
     text: message,
+    onConfirmBtnTap: ()=>action!()
   );
 }

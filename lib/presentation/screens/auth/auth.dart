@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/constants/enums/fields.dart';
@@ -17,6 +18,7 @@ import '../../../resources/route_manager.dart';
 import '../../../resources/string_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../widgets/action_wrap.dart';
+import '../../widgets/cool_alert.dart';
 import '../../widgets/error_dialog.dart';
 import '../../widgets/text_field.dart';
 
@@ -100,9 +102,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<SignInCubit, SignInState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      const LoadingWidget();
+                      kCoolAlert(
+                        message: 'Loading...please wait',
+                        context: context,
+                        alert: CoolAlertType.loading,
+                      );
                     } else if (state.status == ProcessStatus.error) {
                       errorDialog(context: context, error: state.error);
+                      kCoolAlert(
+                        message: 'An error occurred! ${state.error}!',
+                        context: context,
+                        alert: CoolAlertType.error,
+                      );
                     }
                   }),
 
@@ -110,9 +121,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<SignUpCubit, SignUpState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      const LoadingWidget();
+                      kCoolAlert(
+                        message: 'Loading...please wait',
+                        context: context,
+                        alert: CoolAlertType.loading,
+                      );
                     } else if (state.status == ProcessStatus.error) {
                       errorDialog(context: context, error: state.error);
+                      kCoolAlert(
+                        message: 'An error occurred! ${state.error}!',
+                        context: context,
+                        alert: CoolAlertType.error,
+                      );
                     }
                   }),
 
@@ -120,9 +140,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<GoogleAuthCubit, GoogleAuthState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      const LoadingWidget();
+                      kCoolAlert(
+                        message: 'Loading...please wait',
+                        context: context,
+                        alert: CoolAlertType.loading,
+                      );
                     } else if (state.status == ProcessStatus.error) {
                       errorDialog(context: context, error: state.error);
+                      kCoolAlert(
+                        message: 'An error occurred! ${state.error}!',
+                        context: context,
+                        alert: CoolAlertType.error,
+                      );
                     }
                   }),
 

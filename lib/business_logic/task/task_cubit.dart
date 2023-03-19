@@ -17,7 +17,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(state.copyWith(status: ProcessStatus.loading));
 
     try {
-      taskRepository.addTask(task: task);
+      await taskRepository.addTask(task: task);
       emit(state.copyWith(
         task: task,
         status: ProcessStatus.success,
@@ -37,7 +37,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(state.copyWith(status: ProcessStatus.loading));
 
     try {
-      taskRepository.editTask(task: task, id: id);
+      await taskRepository.editTask(task: task, id: id);
       emit(state.copyWith(
         task: task,
         status: ProcessStatus.success,
@@ -52,7 +52,7 @@ class TaskCubit extends Cubit<TaskState> {
     Future<void> deleteTask({required String id}) async {
       emit(state.copyWith(status: ProcessStatus.loading));
       try {
-        taskRepository.deleteTask(id: id);
+        await taskRepository.deleteTask(id: id);
         emit(state.copyWith(
           status: ProcessStatus.success,
         ));

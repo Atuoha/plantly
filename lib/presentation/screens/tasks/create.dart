@@ -1,4 +1,5 @@
 import 'package:cool_alert/cool_alert.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/models/task.dart';
@@ -32,6 +33,7 @@ class _CreateTaskState extends State<CreateTask> {
   final TextEditingController dateController = TextEditingController();
   final TextEditingController repeatController = TextEditingController();
   DateTime date = DateTime.now();
+  final GlobalKey<State<StatefulWidget>> _dialogKey = GlobalKey();
 
   var currentPlant = '';
   final List<Plant> plants = const [
@@ -42,6 +44,7 @@ class _CreateTaskState extends State<CreateTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -50,6 +53,7 @@ class _CreateTaskState extends State<CreateTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -58,6 +62,7 @@ class _CreateTaskState extends State<CreateTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -66,6 +71,7 @@ class _CreateTaskState extends State<CreateTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
   ];
 
@@ -155,6 +161,16 @@ class _CreateTaskState extends State<CreateTask> {
     );
   }
 
+  // reset from
+  void resetForm() {
+    setState(() {
+      titleController.clear();
+      descriptionController.clear();
+      dateController.clear();
+    });
+    Navigator.of(_dialogKey.currentContext!).pop(true);
+  }
+
   void submitTask() {
     final model = context.read<TaskCubit>();
     FocusScope.of(context).unfocus();
@@ -163,6 +179,9 @@ class _CreateTaskState extends State<CreateTask> {
     if (!valid) {
       return;
     }
+
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
     final Task task = Task(
       id: DateTime.now().toString(),
       title: titleController.text.trim(),
@@ -170,10 +189,9 @@ class _CreateTaskState extends State<CreateTask> {
       plantId: plants.firstWhere((plant) => plant.title == currentPlant).title,
       date: date,
       repeat: currentRepeat,
+      userId: userId,
     );
     model.addTask(task: task);
-
-    print('Am herer');
   }
 
   @override
@@ -222,12 +240,21 @@ class _CreateTaskState extends State<CreateTask> {
             child: BlocListener<TaskCubit, TaskState>(
               listener: (context, state) {
                 if (state.status == ProcessStatus.loading) {
-                  const LoadingWidget();
+                  showDialog(
+                    context: _dialogKey.currentContext!,
+                    builder: (context) => AlertDialog(
+                      key: _dialogKey,
+                      content: const LoadingWidget(
+                        size: 50,
+                      ),
+                    ),
+                  );
                 } else if (state.status == ProcessStatus.success) {
                   kCoolAlert(
                     message: '${titleController.text} successfully added!',
                     context: context,
                     alert: CoolAlertType.success,
+                    action: resetForm,
                   );
                 } else if (state.status == ProcessStatus.error) {
                   kCoolAlert(

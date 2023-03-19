@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../business_logic/task/task_cubit.dart';
@@ -44,6 +45,7 @@ class _EditTaskState extends State<EditTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -52,6 +54,7 @@ class _EditTaskState extends State<EditTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -60,6 +63,7 @@ class _EditTaskState extends State<EditTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
     Plant(
       id: '1',
@@ -68,6 +72,7 @@ class _EditTaskState extends State<EditTask> {
       imgUrl: '',
       waterLevel: 0,
       sunLevel: 0,
+      userId: '',
     ),
   ];
 
@@ -175,6 +180,9 @@ class _EditTaskState extends State<EditTask> {
     if (!valid) {
       return;
     }
+
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
     final Task task = Task(
       id: DateTime.now().toString(),
       title: titleController.text.trim(),
@@ -182,8 +190,20 @@ class _EditTaskState extends State<EditTask> {
       plantId: plants.firstWhere((plant) => plant.title == currentPlant).title,
       date: date,
       repeat: currentRepeat,
+      userId: userId,
     );
     model.editTask(task: task, id: widget.task.id);
+  }
+
+  // reset from
+  void resetForm() {
+    setState(() {
+      titleController.clear();
+      descriptionController.clear();
+      dateController.clear();
+    });
+    Navigator.of(context).pop();
+
   }
 
   @override
@@ -232,12 +252,16 @@ class _EditTaskState extends State<EditTask> {
             child: BlocListener<TaskCubit, TaskState>(
               listener: (context, state) {
                 if (state.status == ProcessStatus.loading) {
-                  const LoadingWidget();
+                  showDialog(
+                    context: context,
+                    builder: (context) => const LoadingWidget(),
+                  );
                 } else if (state.status == ProcessStatus.success) {
                   kCoolAlert(
                     message: '${titleController.text} successfully added!',
                     context: context,
                     alert: CoolAlertType.success,
+                    action: resetForm,
                   );
                 } else if (state.status == ProcessStatus.error) {
                   kCoolAlert(

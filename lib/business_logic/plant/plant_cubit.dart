@@ -17,7 +17,7 @@ class PlantCubit extends Cubit<PlantState> {
     emit(state.copyWith(status: ProcessStatus.loading));
 
     try {
-      plantRepository.addPlant(plant: plant);
+      await plantRepository.addPlant(plant: plant);
       emit(state.copyWith(
         plant: plant,
         status: ProcessStatus.success,
@@ -37,7 +37,7 @@ class PlantCubit extends Cubit<PlantState> {
     emit(state.copyWith(status: ProcessStatus.loading));
 
     try {
-      plantRepository.editPlant(plant: plant, id: id);
+      await plantRepository.editPlant(plant: plant, id: id);
       emit(state.copyWith(
         plant: plant,
         status: ProcessStatus.success,
@@ -52,7 +52,7 @@ class PlantCubit extends Cubit<PlantState> {
     Future<void> deletePlant({required String id}) async {
       emit(state.copyWith(status: ProcessStatus.loading));
       try {
-        plantRepository.deletePlant(id: id);
+        await  plantRepository.deletePlant(id: id);
         emit(state.copyWith(
           status: ProcessStatus.success,
         ));

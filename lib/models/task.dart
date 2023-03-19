@@ -8,15 +8,16 @@ class Task extends Equatable {
   final String plantId;
   final DateTime date;
   final String repeat;
+  final String userId;
 
-  const Task({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.plantId,
-    required this.date,
-    required this.repeat,
-  });
+  const Task(
+      {required this.id,
+      required this.title,
+      required this.description,
+      required this.plantId,
+      required this.date,
+      required this.repeat,
+      required this.userId});
 
   factory Task.initial() => Task(
         id: '',
@@ -25,6 +26,7 @@ class Task extends Equatable {
         plantId: '',
         date: DateTime.now(),
         repeat: '',
+        userId: '',
       );
 
   factory Task.fromJson(DocumentSnapshot taskDoc) {
@@ -37,14 +39,16 @@ class Task extends Equatable {
       plantId: task['plantId'],
       date: task['date'],
       repeat: task['repeat'],
+      userId: task['userId'],
     );
   }
 
   @override
-  List<Object?> get props => [id, title, description, plantId, date, repeat];
+  List<Object?> get props =>
+      [id, title, description, plantId, date, repeat, userId];
 
   @override
   String toString() {
-    return 'Task{id: $id, title: $title, description: $description, plantId: $plantId, date: $date, repeat: $repeat}';
+    return 'Task{id: $id, title: $title, description: $description, plantId: $plantId, date: $date, repeat: $repeat,userId:$userId}';
   }
 }

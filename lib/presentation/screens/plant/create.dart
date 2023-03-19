@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,8 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       }
     }
 
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
     Plant plant = Plant(
       id: DateTime.now().toString(),
       title: titleController.text.trim(),
@@ -118,18 +121,19 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       imgUrl: downloadLink!,
       waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
       sunLevel: int.parse(waterLevel.toStringAsFixed(0)),
+      userId: userId,
     );
 
     model.addPlant(plant: plant);
-    resetForm();
   }
 
   void resetForm() {
-    titleController.clear();
-    descriptionController.clear();
     setState(() {
       isImageSelected = false;
+      titleController.clear();
+      descriptionController.clear();
     });
+    Navigator.of(context).pop();
   }
 
   @override
@@ -176,12 +180,17 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
           child: BlocListener<PlantCubit, PlantState>(
             listener: (context, state) {
               if (state.status == ProcessStatus.loading) {
-                const LoadingWidget();
+                showDialog(
+                  context: context,
+                  builder: (context) => const LoadingWidget(),
+                );
+
               } else if (state.status == ProcessStatus.success) {
                 kCoolAlert(
                   message: '${titleController.text} successfully added!',
                   context: context,
                   alert: CoolAlertType.success,
+                  action: resetForm,
                 );
               } else if (state.status == ProcessStatus.error) {
                 kCoolAlert(

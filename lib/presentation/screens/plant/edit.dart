@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,6 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
       waterLevel = widget.plant['sunLevel'];
       downloadLink = widget.plant['imgUrl'];
     });
-
   }
 
   Future selectImage(ImagePathSource source) async {
@@ -121,6 +121,8 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
       }
     }
 
+    var userId = FirebaseAuth.instance.currentUser!.uid;
+
     Plant plant = Plant(
       id: DateTime.now().toString(),
       title: titleController.text.trim(),
@@ -128,6 +130,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
       imgUrl: downloadLink!,
       waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
       sunLevel: int.parse(waterLevel.toStringAsFixed(0)),
+      userId: userId,
     );
 
     model.editPlant(plant: plant, id: widget.plant['id']);
@@ -135,11 +138,12 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
   }
 
   void resetForm() {
-    titleController.clear();
-    descriptionController.clear();
     setState(() {
       isImageSelected = false;
+      titleController.clear();
+      descriptionController.clear();
     });
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -186,12 +190,16 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
           child: BlocListener<PlantCubit, PlantState>(
             listener: (context, state) {
               if (state.status == ProcessStatus.loading) {
-                const LoadingWidget();
+                showDialog(
+                  context: context,
+                  builder: (context) => const LoadingWidget(),
+                );
               } else if (state.status == ProcessStatus.success) {
                 kCoolAlert(
                   message: '${titleController.text} successfully edited!',
                   context: context,
                   alert: CoolAlertType.success,
+                  action: resetForm,
                 );
               } else if (state.status == ProcessStatus.error) {
                 kCoolAlert(
