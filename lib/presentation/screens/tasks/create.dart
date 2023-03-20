@@ -103,7 +103,9 @@ class _CreateTaskState extends State<CreateTask> {
 
     if (pickedDate != null) {
       setState(() {
-        dateController.text = pickedDate.toString();
+        dateController.text =
+            DateTime(pickedDate.year, pickedDate.month, pickedDate.day)
+                .toString();
         date = pickedDate;
       });
     }
@@ -168,7 +170,9 @@ class _CreateTaskState extends State<CreateTask> {
       descriptionController.clear();
       dateController.clear();
     });
-    Navigator.of(_dialogKey.currentContext!).pop(true);
+    // Navigator.of(_dialogKey.currentContext!).pop(true);
+
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   void submitTask() {

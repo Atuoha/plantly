@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:plantly/resources/route_manager.dart';
 
@@ -10,9 +11,12 @@ import 'package:table_calendar/table_calendar.dart';
 class TaskSingleView extends StatelessWidget {
   const TaskSingleView({Key? key}) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final data =  ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
+    final task  = data['task'];
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +28,7 @@ class TaskSingleView extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Your Task',
+          'For: Your Task',
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,
@@ -60,7 +64,7 @@ class TaskSingleView extends StatelessWidget {
                   .pushNamed(RouteManager.singlePlantViewScreen),
               child: FittedBox(
                 child: Text(
-                  'Casamadus Freta',
+                 task['title'],
                   style: getMediumStyle(
                     color: fontColor,
                     fontSize: FontSize.s25,
@@ -93,7 +97,7 @@ class TaskSingleView extends StatelessWidget {
                 leftChevronIcon: Icon(Icons.calendar_month),
                 rightChevronVisible: false,
               ),
-              firstDay: DateTime.now(),
+              firstDay: task,
               lastDay: DateTime.now(),
               focusedDay: DateTime.now(),
             ),

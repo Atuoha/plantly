@@ -1,19 +1,66 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:plantly/business_logic/exports.dart';
+import 'package:plantly/repositories/plant_repository.dart';
 
 import '../../../constants/color.dart';
+import '../../../models/plant.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../../resources/values_manager.dart';
+import '../../../constants/firestore_refs.dart';
+import '../../components/task_single_gridview.dart';
+import '../../widgets/loading.dart';
 
-class ViewAllTasks extends StatelessWidget {
+class ViewAllTasks extends StatefulWidget {
   const ViewAllTasks({Key? key}) : super(key: key);
 
-  void removeFromList() {}
+  @override
+  State<ViewAllTasks> createState() => _ViewAllTasksState();
+}
+
+class _ViewAllTasksState extends State<ViewAllTasks> {
+  final now = DateTime.now();
+  var date = DateTime.now();
+
+  void removeFromList(String id) {}
+
+  @override
+  void initState() {
+    setState(() {
+      date = DateTime(now.year, now.month, now.day);
+    });
+    super.initState();
+  }
+
+  String plantImgUrl = '';
+
+  retrievePlant(String plantId) async {
+    DocumentSnapshot plantDoc =
+        await FirestoreRef.plantRef.doc(plantId.trim()).get();
+
+    Plant plant = Plant.fromJson(plantDoc);
+    setState(() {
+      plantImgUrl = plant.imgUrl;
+    });
+    print('IMAGE URLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL: $plantImgUrl');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    Stream<QuerySnapshot> taskStreams =
+        FirestoreRef.taskRef.where('userId', isEqualTo: userId).snapshots();
+
+    Stream<QuerySnapshot> todayTaskStreams = FirestoreRef.taskRef
+        .where('userId', isEqualTo: userId)
+        .where('date', isEqualTo: date)
+        .snapshots();
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -69,107 +116,65 @@ class ViewAllTasks extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: List.generate(
-                  10,
-                  (index) =>  GestureDetector(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(RouteManager.taskSingleViewScreen),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Dismissible(
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: litePlantColor,
-                          ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.delete_forever_outlined,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (DismissDirection direction) =>
-                            removeFromList(),
-                        key: const ValueKey('dissimible1'),
-                        confirmDismiss: (DismissDirection direction) =>
-                            showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Do you want to delete?'),
-                            content: const Text(
-                              'Delete this plant. Are you sure you want to continue',
-                            ),
-                            actions: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10),
-                                ),
-                                onPressed: () {},
-                                child: const Text('Yes'),
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10),
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: plantBgColor,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          height: 90,
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset('assets/images/f1.jpg'),
-                              ),
-                              const SizedBox(width: AppSize.s10),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FittedBox(
-                                      child: Text(
-                                        'Plaintain Wuve',
-                                        style: getMediumStyle(
-                                          color: fontColor,
-                                          fontSize: FontSize.s18,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    FittedBox(
-                                      child: Text(
-                                        'lorem ipsum and lo nota',
-                                        style: getRegularStyle(
-                                          color: fontColor,
-                                          fontSize: FontSize.s16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: todayTaskStreams,
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'An error occurred!',
+                        style: getRegularStyle(
+                          color: primaryColor,
                         ),
                       ),
-                    ),
-                  ),
-                ),
+                    );
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: LoadingWidget(size: 50));
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Image.asset(AssetManager.empty),
+                          Text(
+                            'Today\'s Tasks are empty!',
+                            style: getRegularStyle(
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var task = snapshot.data!.docs[index];
+
+                      final plantId = task['plantId'];
+                      retrievePlant(plantId);
+
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).pushNamed(
+                            RouteManager.taskSingleViewScreen,
+                            arguments: {'task': task}),
+                        child: SingleGridView(
+                          id: task['id'],
+                          title: task['title'],
+                          description: task['description'],
+                          imgUrl: plantImgUrl,
+                          removeFromList: removeFromList,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
             const SizedBox(height: 10),
@@ -184,107 +189,65 @@ class ViewAllTasks extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: List.generate(
-                  10,
-                  (index) => GestureDetector(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(RouteManager.taskSingleViewScreen),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Dismissible(
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: litePlantColor,
-                          ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.delete_forever_outlined,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (DismissDirection direction) =>
-                            removeFromList(),
-                        key: const ValueKey('dissimible1'),
-                        confirmDismiss: (DismissDirection direction) =>
-                            showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Do you want to delete?'),
-                            content: const Text(
-                              'Delete this plant. Are you sure you want to continue',
-                            ),
-                            actions: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10),
-                                ),
-                                onPressed: () {},
-                                child: const Text('Yes'),
-                              ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(10),
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: plantBgColor,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          height: 90,
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.asset('assets/images/f1.jpg'),
-                              ),
-                              const SizedBox(width: AppSize.s10),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    FittedBox(
-                                      child: Text(
-                                        'Plaintain Wuve',
-                                        style: getMediumStyle(
-                                          color: fontColor,
-                                          fontSize: FontSize.s18,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    FittedBox(
-                                      child: Text(
-                                        'lorem ipsum and lo nota',
-                                        style: getRegularStyle(
-                                          color: fontColor,
-                                          fontSize: FontSize.s16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: taskStreams,
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'An error occurred!',
+                        style: getRegularStyle(
+                          color: primaryColor,
                         ),
                       ),
-                    ),
-                  ),
-                ),
+                    );
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: LoadingWidget(size: 50));
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Image.asset(AssetManager.empty),
+                          Text(
+                            'Tasks are empty!',
+                            style: getRegularStyle(
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var task = snapshot.data!.docs[index];
+                      final plantId = task['plantId'];
+
+                      retrievePlant(plantId);
+
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).pushNamed(
+                            RouteManager.taskSingleViewScreen,
+                            arguments: {'task': task}),
+                        child: SingleGridView(
+                          id: task['id'],
+                          title: task['title'],
+                          description: task['description'],
+                          imgUrl: plantImgUrl,
+                          removeFromList: removeFromList,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

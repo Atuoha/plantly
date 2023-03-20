@@ -13,12 +13,13 @@ class TaskRepository {
     try {
       await FirestoreRef.taskRef.doc().set({
         'id': task.id,
+        'userId': task.userId,
         'title': task.title,
         'description': task.description,
         'plantId': task.plantId,
         'date': task.date,
         'repeat': task.repeat,
-        'userId': task.userId,
+
       });
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
@@ -34,12 +35,13 @@ class TaskRepository {
     try {
       await FirestoreRef.taskRef.doc(id).update({
         'id': task.id,
+        'userId': task.userId,
         'title': task.title,
         'description': task.description,
         'plantId': task.plantId,
         'date': task.date,
         'repeat': task.repeat,
-        'userId': task.userId,
+
       });
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);

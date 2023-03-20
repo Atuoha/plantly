@@ -30,6 +30,26 @@ class PlantCubit extends Cubit<PlantState> {
     }
   }
 
+  Future fetchPlant({required String id}) async {
+    try {
+      final plant = await plantRepository.fetchSinglePlant(id: id);
+      return Plant(
+        id: plant.id,
+        title: plant.title,
+        description: plant.description,
+        imgUrl: plant.imgUrl,
+        waterLevel: plant.waterLevel,
+        sunLevel: plant.sunLevel,
+        userId: plant.userId,
+      );
+    } on CustomError catch (e) {
+      emit(state.copyWith(
+        status: ProcessStatus.error,
+        error: e,
+      ));
+    }
+  }
+
   Future<void> editPlant({
     required Plant plant,
     required String id,
@@ -52,7 +72,7 @@ class PlantCubit extends Cubit<PlantState> {
     Future<void> deletePlant({required String id}) async {
       emit(state.copyWith(status: ProcessStatus.loading));
       try {
-        await  plantRepository.deletePlant(id: id);
+        await plantRepository.deletePlant(id: id);
         emit(state.copyWith(
           status: ProcessStatus.success,
         ));
