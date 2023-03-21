@@ -66,7 +66,7 @@ final routes = {
 
   // Plant
   RouteManager.viewAllPlantsScreen: (context) => const ViewAllPlants(),
-  RouteManager.singlePlantViewScreen: (context) => const SinglePlantScreen(),
+  // RouteManager.singlePlantViewScreen: (context) => const SinglePlantScreen(),
   RouteManager.filterPlantScreen: (context) => const FilterPlant(),
   RouteManager.createPlantScreen: (context) => const CreatePlantScreen(),
   // RouteManager.editPlantScreen: (context) => const EditPlantScreen(),
@@ -92,7 +92,7 @@ final routes = {
 
   // Task
   RouteManager.viewAllTasks: (context) => const ViewAllTasks(),
-  RouteManager.taskSingleViewScreen: (context) => const TaskSingleView(),
+  // RouteManager.taskSingleViewScreen: (context) => const TaskSingleView(),
   RouteManager.createTaskScreen: (context) => const CreateTask(),
   // RouteManager.editTaskScreen: (context) => const EditTask(),
 };

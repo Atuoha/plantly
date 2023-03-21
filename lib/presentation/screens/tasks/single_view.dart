@@ -12,20 +12,42 @@ import '../../../resources/values_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class TaskSingleView extends StatefulWidget {
-  const TaskSingleView({Key? key}) : super(key: key);
+  const TaskSingleView({
+    Key? key,
+    required this.task,
+    required this.plantId,
+  }) : super(key: key);
+  final DocumentSnapshot task;
+  final String plantId;
 
   @override
   State<TaskSingleView> createState() => _TaskSingleViewState();
 }
 
 class _TaskSingleViewState extends State<TaskSingleView> {
+  Plant plant = Plant.initial();
+
+  retrievePlant() async {
+    await context.read<PlantCubit>().fetchPlant(id: widget.plantId);
+  }
+
+  @override
+  void initState() {
+    retrievePlant();
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    setState(() {
+      plant = context.read<PlantCubit>().state.plant;
+    });
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final data =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final task = data['task'];
-    final plant = data['plant'];
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +95,7 @@ class _TaskSingleViewState extends State<TaskSingleView> {
                   .pushNamed(RouteManager.singlePlantViewScreen),
               child: FittedBox(
                 child: Text(
-                  task['title'],
+                  widget.task['title'],
                   style: getMediumStyle(
                     color: fontColor,
                     fontSize: FontSize.s25,
@@ -83,7 +105,7 @@ class _TaskSingleViewState extends State<TaskSingleView> {
             ),
             const SizedBox(height: 5),
             Text(
-              'Repeat: ${task['repeat']}',
+              'Repeat: ${widget.task['repeat']}',
               style: getRegularStyle(
                 color: Colors.grey,
                 fontSize: FontSize.s16,
@@ -91,7 +113,7 @@ class _TaskSingleViewState extends State<TaskSingleView> {
             ),
             const SizedBox(height: 20),
             Text(
-              task['description'],
+              widget.task['description'],
               textAlign: TextAlign.justify,
               style: getRegularStyle(
                 color: Colors.black,
@@ -106,9 +128,9 @@ class _TaskSingleViewState extends State<TaskSingleView> {
                 leftChevronIcon: Icon(Icons.calendar_month),
                 rightChevronVisible: false,
               ),
-              firstDay: task['date'],
-              lastDay: task['date'],
-              focusedDay: task['date'],
+              firstDay: widget.task['date'].toDate(),
+              lastDay: widget.task['date'].toDate(),
+              focusedDay: widget.task['date'].toDate(),
             ),
           ],
         ),

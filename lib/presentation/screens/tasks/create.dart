@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/models/task.dart';
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../business_logic/task/task_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/drop_down.dart';
@@ -36,44 +37,7 @@ class _CreateTaskState extends State<CreateTask> {
   final GlobalKey<State<StatefulWidget>> _dialogKey = GlobalKey();
 
   var currentPlant = '';
-  final List<Plant> plants = const [
-    Plant(
-      id: '1',
-      title: 'Sun Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Hibiscus',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Moon Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Dove Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-  ];
+  List<Plant> plants = const [];
 
   var currentRepeat = '';
   final repeats = [
@@ -83,13 +47,25 @@ class _CreateTaskState extends State<CreateTask> {
     'Others',
   ];
 
+  retrievePlants() async {
+    await context.read<PlantCubit>().fetchPlants();
+  }
+
   @override
   void initState() {
-    setState(() {
-      currentPlant = plants[0].title;
-      currentRepeat = repeats[0];
-    });
+    retrievePlants();
+
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    setState(() {
+      currentRepeat = repeats[0];
+      plants = context.read<PlantCubit>().state.plants;
+      currentPlant = plants[0].title;
+    });
+    super.didChangeDependencies();
   }
 
   // pick date
@@ -172,7 +148,7 @@ class _CreateTaskState extends State<CreateTask> {
     });
     // Navigator.of(_dialogKey.currentContext!).pop(true);
 
-    Navigator.of(context, rootNavigator: true).pop();
+    Navigator.of(_dialogKey.currentContext!, rootNavigator: true).pop(true);
   }
 
   void submitTask() {
@@ -190,7 +166,7 @@ class _CreateTaskState extends State<CreateTask> {
       id: DateTime.now().toString(),
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
-      plantId: plants.firstWhere((plant) => plant.title == currentPlant).title,
+      plantId: plants.firstWhere((plant) => plant.title == currentPlant).id,
       date: date,
       repeat: currentRepeat,
       userId: userId,

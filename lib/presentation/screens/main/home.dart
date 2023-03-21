@@ -70,9 +70,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 15.0,
-          horizontal: 8.0,
+        padding: const EdgeInsets.only(
+          top: 15.0,
+          left: 8.0,
+          right:8.0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

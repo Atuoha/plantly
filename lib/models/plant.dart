@@ -27,7 +27,7 @@ class Plant extends Equatable {
         imgUrl: '',
         waterLevel: 0,
         sunLevel: 0,
-    userId: '',
+        userId: '',
       );
 
   factory Plant.fromJson(DocumentSnapshot plantDoc) {
@@ -45,8 +45,15 @@ class Plant extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, title, description, imgUrl, waterLevel, sunLevel,userId,];
+  List<Object?> get props => [
+        id,
+        title,
+        description,
+        imgUrl,
+        waterLevel,
+        sunLevel,
+        userId,
+      ];
 
   @override
   String toString() {
@@ -69,7 +76,7 @@ class Plant extends Equatable {
       imgUrl: imgUrl ?? this.imgUrl,
       waterLevel: waterLevel ?? this.waterLevel,
       sunLevel: sunLevel ?? this.sunLevel,
-      userId: userId?? this.userId,
+      userId: userId ?? this.userId,
     );
   }
 }

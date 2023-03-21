@@ -69,6 +69,8 @@ class SinglePlantGridView extends StatelessWidget {
                       // const SizedBox(height: 5),
                       Text(
                         description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: getItalicsRegularStyle(
                           color: Colors.grey,
                         ),

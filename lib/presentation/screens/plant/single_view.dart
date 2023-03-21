@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/values_manager.dart';
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../utils/black_white_image_conversion.dart';
 
 class SinglePlantScreen extends StatefulWidget {
-  const SinglePlantScreen({Key? key}) : super(key: key);
+  const SinglePlantScreen({Key? key, required this.plant, required this.id})
+      : super(key: key);
+  final DocumentSnapshot plant;
+  final String id;
 
   @override
   State<SinglePlantScreen> createState() => _SinglePlantScreenState();
@@ -21,15 +27,23 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
     });
   }
 
+
+  retrieveTaskLength() async {
+    await context.read<PlantCubit>().taskLength(plantId: widget.id);
+  }
+
+  @override
+  void initState() {
+    retrieveTaskLength();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final data =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final plant = data['plant'];
 
-    var remainingWaterLevel = 5 - plant['waterLevel'];
-    var remainingSunLevel = 5 - plant['sunLevel'];
+    var remainingWaterLevel = 5 - widget.plant['waterLevel'];
+    var remainingSunLevel = 5 - widget.plant['sunLevel'];
 
     return Scaffold(
       appBar: AppBar(
@@ -88,14 +102,14 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
-                  plant['description'],
+                  widget.plant['imgUrl'],
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              plant['title'],
+              widget.plant['title'],
               style: getMediumStyle(
                 color: fontColor,
                 fontSize: FontSize.s25,
@@ -103,7 +117,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
             ),
             const SizedBox(height: 5),
             Text(
-              'Casamadus Freta',
+              widget.plant['title'],
               style: getRegularStyle(
                 color: Colors.grey,
                 fontSize: FontSize.s13,
@@ -111,7 +125,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              plant['description'],
+              widget.plant['description'],
               textAlign: TextAlign.justify,
               style: getRegularStyle(
                 color: Colors.black,
@@ -146,19 +160,25 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          children: List.generate(
-                            plant['waterLevel'],
-                            (index) => const Icon(Icons.water_drop,
-                                color: waterIconBg),
-                          ),
-                        ),
-                        Row(
-                          children: List.generate(
-                            int.parse(remainingWaterLevel.toString()),
-                            (index) => const Icon(Icons.water_drop,
-                                color: Colors.grey),
-                          ),
+                        Wrap(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                widget.plant['waterLevel'],
+                                (index) => const Icon(Icons.water_drop,
+                                    color: waterIconBg),
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                int.parse(remainingWaterLevel.toString()),
+                                (index) => const Icon(Icons.water_drop,
+                                    color: Colors.grey),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -188,15 +208,26 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          children: const [
-                            Icon(Icons.sunny, color: sunIconBg),
-                            Icon(Icons.sunny, color: sunIconBg),
-                            Icon(Icons.sunny, color: sunIconBg),
-                            Icon(Icons.sunny, color: sunIconBg),
-                            Icon(Icons.sunny, color: Colors.grey),
+                        Wrap(
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                widget.plant['sunLevel'],
+                                (index) =>
+                                    const Icon(Icons.sunny, color: sunIconBg),
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                int.parse(remainingSunLevel.toString()),
+                                (index) =>
+                                    const Icon(Icons.sunny, color: Colors.grey),
+                              ),
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -275,7 +306,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          '1 Task every week',
+                          '${context.read<PlantCubit>().state.tasks} Tasks',
                           style: getUnderlineRegularStyle(
                             color: fontColor,
                           ),

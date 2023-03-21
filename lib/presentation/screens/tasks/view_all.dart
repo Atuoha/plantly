@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:plantly/business_logic/exports.dart';
+import 'package:plantly/presentation/presentation_export.dart';
 import 'package:plantly/repositories/plant_repository.dart';
 
 import '../../../constants/color.dart';
@@ -158,9 +159,12 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       final plantId = task['plantId'];
 
                       return GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(
-                            RouteManager.taskSingleViewScreen,
-                            arguments: {'task': task, 'plant': plant}),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TaskSingleView(task: task, plantId: plantId),
+                          ),
+                        ),
                         child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],
@@ -229,9 +233,12 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       final plantId = task['plantId'];
 
                       return GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(
-                            RouteManager.taskSingleViewScreen,
-                            arguments: {'task': task, 'plant': plant}),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TaskSingleView(task: task, plantId: plantId),
+                          ),
+                        ),
                         child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],

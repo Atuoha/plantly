@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:plantly/presentation/presentation_export.dart';
 import 'package:plantly/resources/styles_manager.dart';
 import '../../../business_logic/auth_bloc/auth_bloc.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
@@ -34,7 +36,9 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
 
   @override
   Widget build(BuildContext context) {
-    Stream<QuerySnapshot> plantStream = FirestoreRef.plantRef.snapshots();
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    Stream<QuerySnapshot> plantStream =
+        FirestoreRef.plantRef.where('userId', isEqualTo: userId).snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -131,14 +135,16 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                       mainAxisSpacing: 10,
                       childAspectRatio: 0.8,
                     ),
+                    itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var plant = snapshot.data!.docs[index];
 
                       // split this later
                       return GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(
-                            RouteManager.singlePlantViewScreen,
-                            arguments: {'plant': plant}),
+                        onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => SinglePlantScreen(
+                                    plant: plant, id: plant.id))),
                         child: SinglePlantGridView(
                           title: plant['title'],
                           description: plant['description'],

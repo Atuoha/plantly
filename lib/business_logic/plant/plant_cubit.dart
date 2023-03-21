@@ -30,6 +30,30 @@ class PlantCubit extends Cubit<PlantState> {
     }
   }
 
+  Future fetchPlants() async {
+    try {
+      final List<Plant> plants = await plantRepository.fetchPlants();
+      emit(state.copyWith(plants: plants));
+    } on CustomError catch (e) {
+      emit(state.copyWith(
+        status: ProcessStatus.error,
+        error: e,
+      ));
+    }
+  }
+
+  Future taskLength({required String plantId}) async {
+    try {
+      final length = await plantRepository.fetchTask(plantId: plantId);
+      emit(state.copyWith(tasks: length));
+    } on CustomError catch (e) {
+      emit(state.copyWith(
+        status: ProcessStatus.error,
+        error: e,
+      ));
+    }
+  }
+
   Future fetchPlant({required String id}) async {
     try {
       final plant = await plantRepository.fetchSinglePlant(id: id);
