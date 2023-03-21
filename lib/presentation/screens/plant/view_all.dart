@@ -1,14 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/styles_manager.dart';
 import '../../../business_logic/auth_bloc/auth_bloc.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
+import '../../../constants/firestore_refs.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
-import '../../../resources/values_manager.dart';
+import '../../components/plant_single_gridview.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/searchbox.dart';
 
@@ -33,7 +34,7 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    Stream<QuerySnapshot> plantStream = FirestoreRef.plantRef.snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -86,87 +87,68 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
           children: [
             SearchBox(),
             const SizedBox(height: 10),
-            Expanded(
-              child: GridView(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.8,
-                ),
-                children: List.generate(
-                  10,
-                  (index) =>
+            StreamBuilder<QuerySnapshot>(
+              stream: plantStream,
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'An error occurred!',
+                      style: getRegularStyle(
+                        color: primaryColor,
+                      ),
+                    ),
+                  );
+                }
 
-                      // split this later
-                      GestureDetector(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(RouteManager.singlePlantViewScreen),
-                    child: Stack(
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: LoadingWidget(size: 50));
+                }
+
+                if (snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(AppSize.s20),
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/f1.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          left: 0,
-                          child: ClipRect(
-                            child: BackdropFilter(
-                              filter:
-                                  ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-                              child: Container(
-                                height: size.height / 13,
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(AppSize.s20),
-                                    bottomLeft: Radius.circular(AppSize.s20),
-                                  ),
-                                  // color: Colors.grey.withOpacity(0.5),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 18.0,
-                                    vertical: 10,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      FittedBox(
-                                        child: Text(
-                                          'Crown Imperia',
-                                          style: getMediumStyle(
-                                            color: darkColor,
-                                            fontSize: FontSize.s18,
-                                          ),
-                                        ),
-                                      ),
-                                      // const SizedBox(height: 5),
-                                      Text(
-                                        'unsolicited gaps',
-                                        style: getItalicsRegularStyle(
-                                          color: Colors.grey,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                        // Image.asset(AssetManager.empty),
+                        Text(
+                          'Plants are empty!',
+                          style: getRegularStyle(
+                            color: Colors.grey,
                           ),
                         )
                       ],
                     ),
+                  );
+                }
+
+                return Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.8,
+                    ),
+                    itemBuilder: (context, index) {
+                      var plant = snapshot.data!.docs[index];
+
+                      // split this later
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).pushNamed(
+                            RouteManager.singlePlantViewScreen,
+                            arguments: {'plant': plant}),
+                        child: SinglePlantGridView(
+                          title: plant['title'],
+                          description: plant['description'],
+                          imgUrl: plant['imgUrl'],
+                        ),
+                      );
+                    },
                   ),
-                ),
-              ),
+                );
+              },
             )
           ],
         ),

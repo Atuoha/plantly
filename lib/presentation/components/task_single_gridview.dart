@@ -5,8 +5,8 @@ import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
-class SingleGridView extends StatelessWidget {
-  const SingleGridView({
+class SingleTaskGridView extends StatelessWidget {
+  const SingleTaskGridView({
     super.key,
     required this.id,
     required this.title,
@@ -73,9 +73,12 @@ class SingleGridView extends StatelessWidget {
           height: 90,
           child: Row(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.network(imgUrl),
+              SizedBox(
+                width:150,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(imgUrl,fit:BoxFit.cover,),
+                ),
               ),
               const SizedBox(width: AppSize.s10),
               Padding(

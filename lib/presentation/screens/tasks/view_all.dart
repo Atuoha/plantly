@@ -37,24 +37,22 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
     super.initState();
   }
 
-  String plantImgUrl = '';
+  Plant plant = Plant.initial();
 
   retrievePlant(String plantId) async {
-    DocumentSnapshot plantDoc =
-        await FirestoreRef.plantRef.doc(plantId.trim()).get();
-
-    Plant plant = Plant.fromJson(plantDoc);
+    var plantData = await context.read<PlantCubit>().fetchPlant(id: plantId);
     setState(() {
-      plantImgUrl = plant.imgUrl;
+      plant = plantData;
     });
-    print('IMAGE URLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL: $plantImgUrl');
   }
 
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    Stream<QuerySnapshot> taskStreams =
-        FirestoreRef.taskRef.where('userId', isEqualTo: userId).snapshots();
+    Stream<QuerySnapshot> taskStreams = FirestoreRef.taskRef
+        .where('userId', isEqualTo: userId)
+        // .orderBy('date', descending: true)
+        .snapshots();
 
     Stream<QuerySnapshot> todayTaskStreams = FirestoreRef.taskRef
         .where('userId', isEqualTo: userId)
@@ -158,17 +156,16 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       var task = snapshot.data!.docs[index];
 
                       final plantId = task['plantId'];
-                      retrievePlant(plantId);
 
                       return GestureDetector(
                         onTap: () => Navigator.of(context).pushNamed(
                             RouteManager.taskSingleViewScreen,
-                            arguments: {'task': task}),
-                        child: SingleGridView(
+                            arguments: {'task': task, 'plant': plant}),
+                        child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],
                           description: task['description'],
-                          imgUrl: plantImgUrl,
+                          imgUrl: plant.imgUrl,
                           removeFromList: removeFromList,
                         ),
                       );
@@ -231,17 +228,15 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       var task = snapshot.data!.docs[index];
                       final plantId = task['plantId'];
 
-                      retrievePlant(plantId);
-
                       return GestureDetector(
                         onTap: () => Navigator.of(context).pushNamed(
                             RouteManager.taskSingleViewScreen,
-                            arguments: {'task': task}),
-                        child: SingleGridView(
+                            arguments: {'task': task, 'plant': plant}),
+                        child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],
                           description: task['description'],
-                          imgUrl: plantImgUrl,
+                          imgUrl: plant.imgUrl,
                           removeFromList: removeFromList,
                         ),
                       );

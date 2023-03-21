@@ -33,15 +33,7 @@ class PlantCubit extends Cubit<PlantState> {
   Future fetchPlant({required String id}) async {
     try {
       final plant = await plantRepository.fetchSinglePlant(id: id);
-      return Plant(
-        id: plant.id,
-        title: plant.title,
-        description: plant.description,
-        imgUrl: plant.imgUrl,
-        waterLevel: plant.waterLevel,
-        sunLevel: plant.sunLevel,
-        userId: plant.userId,
-      );
+      emit(state.copyWith(plant: plant));
     } on CustomError catch (e) {
       emit(state.copyWith(
         status: ProcessStatus.error,

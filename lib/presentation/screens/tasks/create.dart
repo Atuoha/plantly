@@ -245,7 +245,7 @@ class _CreateTaskState extends State<CreateTask> {
               listener: (context, state) {
                 if (state.status == ProcessStatus.loading) {
                   showDialog(
-                    context: _dialogKey.currentContext!,
+                    context: context,
                     builder: (context) => AlertDialog(
                       key: _dialogKey,
                       content: const LoadingWidget(

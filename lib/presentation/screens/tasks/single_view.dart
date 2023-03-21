@@ -1,22 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/route_manager.dart';
 
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
+import '../../../models/plant.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../../resources/values_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class TaskSingleView extends StatelessWidget {
+class TaskSingleView extends StatefulWidget {
   const TaskSingleView({Key? key}) : super(key: key);
 
+  @override
+  State<TaskSingleView> createState() => _TaskSingleViewState();
+}
 
+class _TaskSingleViewState extends State<TaskSingleView> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final data =  ModalRoute.of(context)!.settings.arguments as Map<String,dynamic>;
-    final task  = data['task'];
+    final data =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final task = data['task'];
+    final plant = data['plant'];
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +37,7 @@ class TaskSingleView extends StatelessWidget {
           ),
         ),
         title: Text(
-          'For: Your Task',
+          'For: ${plant.title}',
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,
@@ -51,8 +60,8 @@ class TaskSingleView extends StatelessWidget {
                 width: double.infinity,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    'assets/images/f1.jpg',
+                  child: Image.network(
+                    plant.imgUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -64,7 +73,7 @@ class TaskSingleView extends StatelessWidget {
                   .pushNamed(RouteManager.singlePlantViewScreen),
               child: FittedBox(
                 child: Text(
-                 task['title'],
+                  task['title'],
                   style: getMediumStyle(
                     color: fontColor,
                     fontSize: FontSize.s25,
@@ -74,7 +83,7 @@ class TaskSingleView extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             Text(
-              'Repeat: Once a week',
+              'Repeat: ${task['repeat']}',
               style: getRegularStyle(
                 color: Colors.grey,
                 fontSize: FontSize.s16,
@@ -82,7 +91,7 @@ class TaskSingleView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Then I want to show you how you could turn your passion for helping and empowering others… Then I want to show you how you could turn your passion for helping and empowering others…',
+              task['description'],
               textAlign: TextAlign.justify,
               style: getRegularStyle(
                 color: Colors.black,
@@ -97,9 +106,9 @@ class TaskSingleView extends StatelessWidget {
                 leftChevronIcon: Icon(Icons.calendar_month),
                 rightChevronVisible: false,
               ),
-              firstDay: task,
-              lastDay: DateTime.now(),
-              focusedDay: DateTime.now(),
+              firstDay: task['date'],
+              lastDay: task['date'],
+              focusedDay: task['date'],
             ),
           ],
         ),

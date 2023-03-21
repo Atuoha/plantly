@@ -24,6 +24,12 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final data =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final plant = data['plant'];
+
+    var remainingWaterLevel = 5 - plant['waterLevel'];
+    var remainingSunLevel = 5 - plant['sunLevel'];
 
     return Scaffold(
       appBar: AppBar(
@@ -81,15 +87,15 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
               width: double.infinity,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.asset(
-                  'assets/images/f1.jpg',
+                child: Image.network(
+                  plant['description'],
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              'Casamadus Freta',
+              plant['title'],
               style: getMediumStyle(
                 color: fontColor,
                 fontSize: FontSize.s25,
@@ -105,7 +111,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Then I want to show you how you could turn your passion for helping and empowering others… Then I want to show you how you could turn your passion for helping and empowering others…',
+              plant['description'],
               textAlign: TextAlign.justify,
               style: getRegularStyle(
                 color: Colors.black,
@@ -141,14 +147,19 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          children: const [
-                            Icon(Icons.water_drop, color: waterIconBg),
-                            Icon(Icons.water_drop, color: waterIconBg),
-                            Icon(Icons.water_drop, color: waterIconBg),
-                            Icon(Icons.water_drop, color: waterIconBg),
-                            Icon(Icons.water_drop, color: Colors.grey),
-                          ],
-                        )
+                          children: List.generate(
+                            plant['waterLevel'],
+                            (index) => const Icon(Icons.water_drop,
+                                color: waterIconBg),
+                          ),
+                        ),
+                        Row(
+                          children: List.generate(
+                            int.parse(remainingWaterLevel.toString()),
+                            (index) => const Icon(Icons.water_drop,
+                                color: Colors.grey),
+                          ),
+                        ),
                       ],
                     ),
                   ),
