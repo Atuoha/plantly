@@ -21,10 +21,8 @@ class TaskSingleView extends StatefulWidget {
   const TaskSingleView({
     Key? key,
     required this.task,
-    required this.plantId,
   }) : super(key: key);
   final DocumentSnapshot task;
-  final String plantId;
 
   @override
   State<TaskSingleView> createState() => _TaskSingleViewState();
@@ -56,6 +54,11 @@ class _TaskSingleViewState extends State<TaskSingleView> {
       });
     });
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

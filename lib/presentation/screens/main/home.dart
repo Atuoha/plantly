@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/styles_manager.dart';
@@ -6,11 +8,14 @@ import '../../../business_logic/auth_bloc/auth_bloc.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
+import '../../../constants/firestore_refs.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../../resources/values_manager.dart';
+import '../../components/single_plant_listview.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/searchbox.dart';
+import '../plant/single_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -36,6 +41,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    Stream<QuerySnapshot> plantStream = FirestoreRef.plantRef
+        .where('userId', isEqualTo: userId)
+        .snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.only(
           top: 15.0,
           left: 8.0,
-          right:8.0,
+          right: 8.0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,59 +205,60 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: FontSize.s18,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 5),
             SizedBox(
-              height: size.height / 5.0,
-              child: ListView(
-                children: List.generate(
-                  10,
-                  (index) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: recentPlantBg,
-                        borderRadius: BorderRadius.circular(15),
+              height: size.height / 4.5,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: plantStream,
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'An error occurred!',
+                        style: getRegularStyle(
+                          color: primaryColor,
+                        ),
                       ),
-                      height: size.height / 5.1,
-                      child: Row(
+                    );
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: LoadingWidget(size: 50));
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.asset('assets/images/f1.jpg'),
-                          ),
-                          const SizedBox(width: AppSize.s10),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FittedBox(
-                                  child: Text(
-                                    'Plaintain Wuve',
-                                    style: getMediumStyle(
-                                      color: fontColor,
-                                      fontSize: FontSize.s18,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                FittedBox(
-                                  child: Text(
-                                    'lorem ipsum',
-                                    style: getRegularStyle(
-                                      color: fontColor,
-                                      fontSize: FontSize.s16,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          // Image.asset(AssetManager.empty),
+                          Text(
+                            'Plants are empty!',
+                            style: getRegularStyle(
+                              color: Colors.grey,
                             ),
                           )
                         ],
                       ),
-                    ),
-                  ),
-                ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var plant = snapshot.data!.docs[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SinglePlantScreen(plant: plant),
+                          ),
+                        ),
+                        child: SinglePlantListView(size: size, plant: plant),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

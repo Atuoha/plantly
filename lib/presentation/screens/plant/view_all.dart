@@ -142,9 +142,12 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                       // split this later
                       return GestureDetector(
                         onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => SinglePlantScreen(
-                                    plant: plant, id: plant.id))),
+                          MaterialPageRoute(
+                            builder: (context) => SinglePlantScreen(
+                              plant: plant,
+                            ),
+                          ),
+                        ),
                         child: SinglePlantGridView(
                           title: plant['title'],
                           description: plant['description'],

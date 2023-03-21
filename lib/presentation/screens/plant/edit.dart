@@ -165,7 +165,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
           ),
         ),
         title: Text(
-          'Your Plants',
+          'Editing ${widget.plant['title']}',
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,

@@ -5,8 +5,8 @@ import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
-class SingleTaskGridView extends StatelessWidget {
-  const SingleTaskGridView({
+class SingleTaskListView extends StatelessWidget {
+  const SingleTaskListView({
     super.key,
     required this.id,
     required this.title,
@@ -74,10 +74,13 @@ class SingleTaskGridView extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width:150,
+                width: 100,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.network(imgUrl,fit:BoxFit.cover,),
+                  child: Image.network(
+                    imgUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSize.s10),
@@ -96,11 +99,12 @@ class SingleTaskGridView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    FittedBox(
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width /1.7,
                       child: Text(
                         description,
                         maxLines: 1,
-                        overflow:TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                         style: getRegularStyle(
                           color: fontColor,
                           fontSize: FontSize.s16,

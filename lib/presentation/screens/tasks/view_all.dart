@@ -14,7 +14,7 @@ import '../../../resources/route_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../../resources/values_manager.dart';
 import '../../../constants/firestore_refs.dart';
-import '../../components/task_single_gridview.dart';
+import '../../components/task_single_listview.dart';
 import '../../widgets/loading.dart';
 
 class ViewAllTasks extends StatefulWidget {
@@ -86,9 +86,10 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 15.0,
-          horizontal: 8.0,
+        padding: const EdgeInsets.only(
+          top: 15.0,
+          left: 8.0,
+          right: 8.0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,12 +168,11 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
 
                           model.push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  TaskSingleView(task: task, plantId: plantId),
+                              builder: (context) => TaskSingleView(task: task),
                             ),
                           );
                         },
-                        child: SingleTaskGridView(
+                        child: SingleTaskListView(
                           id: task['id'],
                           title: task['title'],
                           description: task['description'],
@@ -248,12 +248,11 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
 
                           model.push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  TaskSingleView(task: task, plantId: plantId),
+                              builder: (context) => TaskSingleView(task: task),
                             ),
                           );
                         },
-                        child: SingleTaskGridView(
+                        child: SingleTaskListView(
                           id: task['id'],
                           title: task['title'],
                           description: task['description'],

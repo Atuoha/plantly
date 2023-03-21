@@ -10,10 +10,9 @@ import '../../../resources/styles_manager.dart';
 import '../../utils/black_white_image_conversion.dart';
 
 class SinglePlantScreen extends StatefulWidget {
-  const SinglePlantScreen({Key? key, required this.plant, required this.id})
+  const SinglePlantScreen({Key? key, required this.plant})
       : super(key: key);
   final DocumentSnapshot plant;
-  final String id;
 
   @override
   State<SinglePlantScreen> createState() => _SinglePlantScreenState();
@@ -29,7 +28,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
   }
 
   retrieveTaskLength() async {
-    await context.read<PlantCubit>().taskLength(plantId: widget.id);
+    await context.read<PlantCubit>().taskLength(plantId: widget.plant['id']);
   }
 
   @override
