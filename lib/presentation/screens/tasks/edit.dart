@@ -3,6 +3,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../business_logic/task/task_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/drop_down.dart';
@@ -37,44 +38,7 @@ class _EditTaskState extends State<EditTask> {
   DateTime date = DateTime.now();
 
   var currentPlant = '';
-  final List<Plant> plants = const [
-    Plant(
-      id: '1',
-      title: 'Sun Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Hibiscus',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Moon Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-    Plant(
-      id: '1',
-      title: 'Dove Flower',
-      description: '',
-      imgUrl: '',
-      waterLevel: 0,
-      sunLevel: 0,
-      userId: '',
-    ),
-  ];
+  List<Plant> plants = const [];
 
   var currentRepeat = '';
   final repeats = [
@@ -84,13 +48,35 @@ class _EditTaskState extends State<EditTask> {
     'Others',
   ];
 
+  retrievePlants() async {
+    await context.read<PlantCubit>().fetchPlants();
+  }
+
+  void setDetails() {
+    setState(() {
+      titleController.text = widget.task['title'];
+      descriptionController.text = widget.task['description'];
+      currentPlant = widget.task['plantId'];
+      currentRepeat = widget.task['repeat'];
+      date = widget.task['date'];
+    });
+  }
+
   @override
   void initState() {
-    setState(() {
-      currentPlant = plants[0].title;
-      currentRepeat = repeats[0];
-    });
+    retrievePlants();
+    setDetails();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    setState(() {
+      currentRepeat = repeats[0];
+      plants = context.read<PlantCubit>().state.plants;
+      currentPlant = plants[0].title;
+    });
+    super.didChangeDependencies();
   }
 
   // pick date
@@ -162,15 +148,7 @@ class _EditTaskState extends State<EditTask> {
     );
   }
 
-  void setDetails() {
-    setState(() {
-      titleController.text = widget.task['title'];
-      titleController.text = widget.task['description'];
-      currentPlant = widget.task['plantId'];
-      currentRepeat = widget.task['repeat'];
-      date = widget.task['date'];
-    });
-  }
+
 
   void submitTask() {
     final model = context.read<TaskCubit>();
@@ -203,7 +181,6 @@ class _EditTaskState extends State<EditTask> {
       dateController.clear();
     });
     Navigator.of(context).pop();
-
   }
 
   @override

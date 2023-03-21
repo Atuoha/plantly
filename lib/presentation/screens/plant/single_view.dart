@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:plantly/presentation/screens/plant/edit.dart';
 import 'package:plantly/resources/values_manager.dart';
 import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
@@ -26,7 +27,6 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
       emojiIndex = index;
     });
   }
-
 
   retrieveTaskLength() async {
     await context.read<PlantCubit>().taskLength(plantId: widget.id);
@@ -108,14 +108,34 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-              widget.plant['title'],
-              style: getMediumStyle(
-                color: fontColor,
-                fontSize: FontSize.s25,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.plant['title'],
+                  style: getMediumStyle(
+                    color: fontColor,
+                    fontSize: FontSize.s25,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => EditPlantScreen(
+                        plant: widget.plant,
+                      ),
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.edit_note,
+                    color: primaryColor,
+                  ),
+                ),
+              ],
             ),
+
             const SizedBox(height: 5),
+
             Text(
               widget.plant['title'],
               style: getRegularStyle(
@@ -123,6 +143,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
                 fontSize: FontSize.s13,
               ),
             ),
+
             const SizedBox(height: 20),
             Text(
               widget.plant['description'],

@@ -56,11 +56,17 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
   void setDetails() {
     setState(() {
       titleController.text = widget.plant['title'];
-      titleController.text = widget.plant['description'];
-      waterLevel = widget.plant['waterLevel'];
-      waterLevel = widget.plant['sunLevel'];
+      descriptionController.text = widget.plant['description'];
+      waterLevel = double.parse(widget.plant['waterLevel'].toString());
+      sunLevel = double.parse(widget.plant['sunLevel'].toString());
       downloadLink = widget.plant['imgUrl'];
     });
+  }
+
+  @override
+  void initState() {
+    setDetails();
+    super.initState();
   }
 
   Future selectImage(ImagePathSource source) async {
@@ -79,6 +85,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
     } else {
       setState(() {
         isImageSelected = true;
+        isImageEdited =  true;
       });
     }
 
@@ -91,7 +98,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
   void resetIsImagePicked() {
     setState(() {
       isImageSelected = false;
-      isImageEdited = false;
+      isImageEdited = true;
     });
   }
 
@@ -221,7 +228,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                !isImageSelected && !isImageEdited
+                isImageEdited && !isImageSelected
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -265,7 +272,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
                                         File(image!.path),
                                         fit: BoxFit.cover,
                                       )
-                                    : Image.network(widget.plant['imgUrl']),
+                                    : Image.network(downloadLink!,fit: BoxFit.cover),
                               ),
                             ),
                           ),

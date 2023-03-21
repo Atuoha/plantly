@@ -159,12 +159,19 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       final plantId = task['plantId'];
 
                       return GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                TaskSingleView(task: task, plantId: plantId),
-                          ),
-                        ),
+                        onTap: () async {
+                          var model = Navigator.of(context);
+                          await context
+                              .read<PlantCubit>()
+                              .fetchPlant(id: plantId);
+
+                          model.push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TaskSingleView(task: task, plantId: plantId),
+                            ),
+                          );
+                        },
                         child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],
@@ -233,12 +240,19 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       final plantId = task['plantId'];
 
                       return GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                TaskSingleView(task: task, plantId: plantId),
-                          ),
-                        ),
+                        onTap: () async {
+                          var model = Navigator.of(context);
+                          await context
+                              .read<PlantCubit>()
+                              .fetchPlant(id: plantId);
+
+                          model.push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TaskSingleView(task: task, plantId: plantId),
+                            ),
+                          );
+                        },
                         child: SingleTaskGridView(
                           id: task['id'],
                           title: task['title'],

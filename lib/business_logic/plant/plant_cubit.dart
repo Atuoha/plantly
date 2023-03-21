@@ -31,9 +31,10 @@ class PlantCubit extends Cubit<PlantState> {
   }
 
   Future fetchPlants() async {
+    emit(state.copyWith(status: ProcessStatus.loading));
     try {
       final List<Plant> plants = await plantRepository.fetchPlants();
-      emit(state.copyWith(plants: plants));
+      emit(state.copyWith(plants: plants,status:ProcessStatus.success));
     } on CustomError catch (e) {
       emit(state.copyWith(
         status: ProcessStatus.error,
@@ -55,9 +56,10 @@ class PlantCubit extends Cubit<PlantState> {
   }
 
   Future fetchPlant({required String id}) async {
+    emit(state.copyWith(status: ProcessStatus.loading));
     try {
       final plant = await plantRepository.fetchSinglePlant(id: id);
-      emit(state.copyWith(plant: plant));
+      emit(state.copyWith(plant: plant,status: ProcessStatus.success));
     } on CustomError catch (e) {
       emit(state.copyWith(
         status: ProcessStatus.error,

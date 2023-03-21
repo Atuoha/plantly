@@ -99,6 +99,8 @@ class SingleTaskGridView extends StatelessWidget {
                     FittedBox(
                       child: Text(
                         description,
+                        maxLines: 1,
+                        overflow:TextOverflow.ellipsis,
                         style: getRegularStyle(
                           color: fontColor,
                           fontSize: FontSize.s16,
