@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../../constants/color.dart';
 import '../../resources/font_manager.dart';
 import '../../resources/styles_manager.dart';

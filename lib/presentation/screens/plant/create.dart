@@ -17,10 +17,8 @@ import '../../../constants/enums/status.dart';
 import '../../../models/success.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
-import '../../../resources/values_manager.dart';
 import '../../utils/image_picker.dart';
 import '../../widgets/cool_alert.dart';
-import '../../widgets/error_dialog.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/message_snackbar.dart';
 import '../../widgets/plant_task_text_field.dart';
@@ -120,7 +118,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       description: descriptionController.text.trim(),
       imgUrl: downloadLink!,
       waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
-      sunLevel: int.parse(waterLevel.toStringAsFixed(0)),
+      sunLevel: int.parse(sunLevel.toStringAsFixed(0)),
       userId: userId,
     );
 

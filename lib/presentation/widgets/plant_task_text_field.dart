@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../constants/color.dart';
 import '../../constants/enums/fields.dart';
 import '../../resources/values_manager.dart';

@@ -145,6 +145,7 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                           MaterialPageRoute(
                             builder: (context) => SinglePlantScreen(
                               plant: plant,
+                              plantDocId: plant.id,
                             ),
                           ),
                         ),

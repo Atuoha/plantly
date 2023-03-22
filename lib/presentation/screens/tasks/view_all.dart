@@ -5,14 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:plantly/business_logic/exports.dart';
 import 'package:plantly/presentation/presentation_export.dart';
-import 'package:plantly/repositories/plant_repository.dart';
-
 import '../../../constants/color.dart';
 import '../../../models/plant.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../../resources/styles_manager.dart';
-import '../../../resources/values_manager.dart';
 import '../../../constants/firestore_refs.dart';
 import '../../components/task_single_listview.dart';
 import '../../widgets/loading.dart';
@@ -50,10 +47,8 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    Stream<QuerySnapshot> taskStreams = FirestoreRef.taskRef
-        .where('userId', isEqualTo: userId)
-        // .orderBy('date', descending: true)
-        .snapshots();
+    Stream<QuerySnapshot> taskStreams =
+        FirestoreRef.taskRef.where('userId', isEqualTo: userId).snapshots();
 
     Stream<QuerySnapshot> todayTaskStreams = FirestoreRef.taskRef
         .where('userId', isEqualTo: userId)
@@ -70,8 +65,12 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
             child: CircleAvatar(
               backgroundColor: primaryColor,
               child: GestureDetector(
-                onTap: () => Navigator.of(context)
-                    .pushNamed(RouteManager.createTaskScreen),
+                onTap: () async {
+                  var model = Navigator.of(context);
+                  await context.read<PlantCubit>().fetchPlants();
+
+                  model.pushNamed(RouteManager.createTaskScreen);
+                },
                 child: const Icon(Icons.add, color: Colors.white),
               ),
             ),
@@ -158,6 +157,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       var task = snapshot.data!.docs[index];
 
                       final plantId = task['plantId'];
+                      retrievePlant(plantId);
 
                       return GestureDetector(
                         onTap: () async {
@@ -168,7 +168,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
 
                           model.push(
                             MaterialPageRoute(
-                              builder: (context) => TaskSingleView(task: task),
+                              builder: (context) => TaskSingleView(task: task, taskDocId: task.id,),
                             ),
                           );
                         },
@@ -239,6 +239,8 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       var task = snapshot.data!.docs[index];
                       final plantId = task['plantId'];
 
+                      retrievePlant(plantId);
+
                       return GestureDetector(
                         onTap: () async {
                           var model = Navigator.of(context);
@@ -248,7 +250,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
 
                           model.push(
                             MaterialPageRoute(
-                              builder: (context) => TaskSingleView(task: task),
+                              builder: (context) => TaskSingleView(task: task, taskDocId: task.id,),
                             ),
                           );
                         },

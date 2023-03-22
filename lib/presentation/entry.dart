@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:is_first_run/is_first_run.dart';
@@ -7,9 +6,6 @@ import 'package:plantly/presentation/presentation_export.dart';
 import '../business_logic/auth_bloc/auth_bloc.dart';
 import '../constants/enums/auth_status.dart';
 import 'utils/background_container.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../constants/color.dart';
 import '../resources/route_manager.dart';
 
 class EntryScreen extends StatefulWidget {

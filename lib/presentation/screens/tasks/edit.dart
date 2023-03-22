@@ -58,7 +58,7 @@ class _EditTaskState extends State<EditTask> {
       descriptionController.text = widget.task['description'];
       currentPlant = widget.task['plantId'];
       currentRepeat = widget.task['repeat'];
-      date = widget.task['date'];
+      date = widget.task['date'].toDate();
     });
   }
 

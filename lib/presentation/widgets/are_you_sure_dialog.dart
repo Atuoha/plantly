@@ -5,6 +5,8 @@ Future<void> areYouSureDialog({
   required String content,
   required BuildContext context,
   required Function action,
+  bool isIdInvolved = false,
+  String id = '',
 }) {
   return showDialog(
     context: context,
@@ -19,7 +21,7 @@ Future<void> areYouSureDialog({
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          onPressed: () => action(),
+          onPressed: () => isIdInvolved ? action(id) : action(),
           child: const Text('Yes'),
         ),
         ElevatedButton(

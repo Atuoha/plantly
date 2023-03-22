@@ -47,14 +47,11 @@ class _CreateTaskState extends State<CreateTask> {
     'Others',
   ];
 
-  retrievePlants() async {
-    await context.read<PlantCubit>().fetchPlants();
-  }
-
   @override
   void initState() {
-    retrievePlants();
-
+    setState(() {
+      plants = context.read<PlantCubit>().state.plants;
+    });
     super.initState();
   }
 
@@ -62,7 +59,6 @@ class _CreateTaskState extends State<CreateTask> {
   void didChangeDependencies() {
     setState(() {
       currentRepeat = repeats[0];
-      plants = context.read<PlantCubit>().state.plants;
       currentPlant = plants[0].title;
     });
     super.didChangeDependencies();

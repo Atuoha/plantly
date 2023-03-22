@@ -48,6 +48,7 @@ class TaskCubit extends Cubit<TaskState> {
         error: e,
       ));
     }
+  }
 
     Future<void> deleteTask({required String id}) async {
       emit(state.copyWith(status: ProcessStatus.loading));
@@ -64,4 +65,4 @@ class TaskCubit extends Cubit<TaskState> {
       }
     }
   }
-}
+

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:plantly/models/custom_error.dart';
-
 import '../constants/firestore_refs.dart';
 import '../models/task.dart';
 

@@ -1,7 +1,6 @@
 import '../presentation/presentation_export.dart';
 import '../presentation/screens/main/bottom_navigation.dart';
-import '../presentation/screens/plant/edit.dart';
-import '../presentation/screens/tasks/edit.dart';
+
 
 class RouteManager {
   // Entry and Main

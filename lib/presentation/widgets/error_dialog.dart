@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
-
 import '../../models/custom_error.dart';
 
 void errorDialog({required BuildContext context, required CustomError error}) {

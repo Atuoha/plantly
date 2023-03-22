@@ -86,8 +86,9 @@ class PlantCubit extends Cubit<PlantState> {
         error: e,
       ));
     }
+  }
 
-    Future<void> deletePlant({required String id}) async {
+    Future<void> deletePlant ({required String id}) async {
       emit(state.copyWith(status: ProcessStatus.loading));
       try {
         await plantRepository.deletePlant(id: id);
@@ -102,4 +103,4 @@ class PlantCubit extends Cubit<PlantState> {
       }
     }
   }
-}
+

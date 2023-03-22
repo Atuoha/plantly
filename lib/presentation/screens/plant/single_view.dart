@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,17 +9,24 @@ import '../../../constants/color.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../utils/black_white_image_conversion.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
+import '../../widgets/are_you_sure_dialog.dart';
 
 class SinglePlantScreen extends StatefulWidget {
-  const SinglePlantScreen({Key? key, required this.plant})
-      : super(key: key);
+  const SinglePlantScreen({
+    Key? key,
+    required this.plant,
+    required this.plantDocId,
+  }) : super(key: key);
   final DocumentSnapshot plant;
+  final String plantDocId;
 
   @override
   State<SinglePlantScreen> createState() => _SinglePlantScreenState();
 }
 
-class _SinglePlantScreenState extends State<SinglePlantScreen> {
+class _SinglePlantScreenState extends State<SinglePlantScreen>
+    with SingleTickerProviderStateMixin {
   var emojiIndex = 0;
 
   void switchIndex(int index) {
@@ -27,13 +35,43 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
     });
   }
 
+  deletePlantAction(String plantId) {
+    context.read<PlantCubit>().deletePlant(id: plantId);
+    Timer(const Duration(seconds: 2), () {
+      Navigator.of(context).pop();
+    });
+  }
+
+  void removePlantDialog(String plantName, String plantId) {
+    areYouSureDialog(
+      title: 'Delete $plantName',
+      content: 'Are you sure you want to delete $plantName?',
+      context: context,
+      action: deletePlantAction,
+      id: plantId,
+      isIdInvolved: true,
+    );
+  }
+
   retrieveTaskLength() async {
     await context.read<PlantCubit>().taskLength(plantId: widget.plant['id']);
   }
 
+  Animation<double>? _animation;
+  AnimationController? _animationController;
+
   @override
   void initState() {
     retrieveTaskLength();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController!);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
     super.initState();
   }
 
@@ -45,6 +83,42 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
     var remainingSunLevel = 5 - widget.plant['sunLevel'];
 
     return Scaffold(
+      floatingActionButton: FloatingActionBubble(
+        items: [
+          Bubble(
+            title: "Edit Plant",
+            iconColor: Colors.white,
+            bubbleColor: primaryColor,
+            icon: Icons.edit_note,
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            onPress: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => EditPlantScreen(
+                  plant: widget.plant,
+                ),
+              ),
+            ),
+          ),
+          Bubble(
+            title: "Delete Plant",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Icons.delete_forever,
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            onPress: () => removePlantDialog(
+              widget.plant['title'],
+              widget.plantDocId,
+            ),
+          ),
+        ],
+        animation: _animation!,
+        onPress: () => _animationController!.isCompleted
+            ? _animationController!.reverse()
+            : _animationController!.forward(),
+        iconColor: Colors.white,
+        iconData: Icons.chevron_right,
+        backGroundColor: primaryColor,
+      ),
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -107,30 +181,13 @@ class _SinglePlantScreenState extends State<SinglePlantScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.plant['title'],
-                  style: getMediumStyle(
-                    color: fontColor,
-                    fontSize: FontSize.s25,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => EditPlantScreen(
-                        plant: widget.plant,
-                      ),
-                    ),
-                  ),
-                  icon: const Icon(
-                    Icons.edit_note,
-                    color: primaryColor,
-                  ),
-                ),
-              ],
+
+            Text(
+              widget.plant['title'],
+              style: getMediumStyle(
+                color: fontColor,
+                fontSize: FontSize.s25,
+              ),
             ),
 
             const SizedBox(height: 5),

@@ -17,7 +17,6 @@ export 'package:plantly/presentation/screens/settings/edit_settings.dart';
 export 'package:plantly/presentation/screens/splash/splash.dart';
 export 'package:plantly/presentation/screens/tasks/create.dart';
 export 'package:plantly/presentation/screens/tasks/view_all.dart';
-
 export '../presentation/entry.dart';
 export '../presentation/screens/plant/create.dart';
 export '../presentation/screens/preferences/about.dart';

@@ -1,41 +1,71 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/presentation/screens/tasks/edit.dart';
 import 'package:plantly/resources/route_manager.dart';
-
 import '../../../business_logic/plant/plant_cubit.dart';
+import '../../../business_logic/task/task_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
 import '../../../models/plant.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
-import '../../../resources/values_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import '../../widgets/are_you_sure_dialog.dart';
 import '../../widgets/loading.dart';
 
 class TaskSingleView extends StatefulWidget {
   const TaskSingleView({
     Key? key,
     required this.task,
+    required this.taskDocId,
   }) : super(key: key);
   final DocumentSnapshot task;
+  final String taskDocId;
 
   @override
   State<TaskSingleView> createState() => _TaskSingleViewState();
 }
 
-class _TaskSingleViewState extends State<TaskSingleView> {
+class _TaskSingleViewState extends State<TaskSingleView>
+    with SingleTickerProviderStateMixin {
   Plant plant = Plant.initial();
-
   bool isLoading = true;
+
+  deleteTaskAction(String taskId) {
+    context.read<TaskCubit>().deleteTask(id: taskId);
+    Timer(const Duration(seconds: 2), () {
+      Navigator.of(context).pop();
+    });
+  }
+
+  void removeTaskDialog(String taskName, String taskId) {
+    areYouSureDialog(
+      title: 'Delete $taskName',
+      content: 'Are you sure you want to delete $taskName?',
+      context: context,
+      action: deleteTaskAction,
+      id: taskId,
+      isIdInvolved: true,
+    );
+  }
+
+  Animation<double>? _animation;
+  AnimationController? _animationController;
 
   @override
   void initState() {
-    // retrievePlant();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController!);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
     super.initState();
   }
 
@@ -66,6 +96,42 @@ class _TaskSingleViewState extends State<TaskSingleView> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
+      floatingActionButton: FloatingActionBubble(
+        items: [
+          Bubble(
+            title: "Edit Task",
+            iconColor: Colors.white,
+            bubbleColor: primaryColor,
+            icon: Icons.edit_note,
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            onPress: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => EditTask(
+                  task: widget.task,
+                ),
+              ),
+            ),
+          ),
+          Bubble(
+            title: "Delete Task",
+            iconColor: Colors.white,
+            bubbleColor: Colors.red,
+            icon: Icons.delete_forever,
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+            onPress: () => removeTaskDialog(
+              widget.task['title'],
+              widget.taskDocId,
+            ),
+          ),
+        ],
+        animation: _animation!,
+        onPress: () => _animationController!.isCompleted
+            ? _animationController!.reverse()
+            : _animationController!.forward(),
+        iconColor: Colors.white,
+        iconData: Icons.chevron_right,
+        backGroundColor: primaryColor,
+      ),
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -113,32 +179,14 @@ class _TaskSingleViewState extends State<TaskSingleView> {
                   GestureDetector(
                     onTap: () => Navigator.of(context)
                         .pushNamed(RouteManager.singlePlantViewScreen),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        FittedBox(
-                          child: Text(
-                            widget.task['title'],
-                            style: getMediumStyle(
-                              color: fontColor,
-                              fontSize: FontSize.s25,
-                            ),
-                          ),
+                    child: FittedBox(
+                      child: Text(
+                        widget.task['title'],
+                        style: getMediumStyle(
+                          color: fontColor,
+                          fontSize: FontSize.s25,
                         ),
-                        IconButton(
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => EditTask(
-                                task: widget.task,
-                              ),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.edit_note,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 5),
