@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:plantly/business_logic/exports.dart';
 import 'package:plantly/presentation/widgets/are_you_sure_dialog.dart';
 import 'package:plantly/resources/route_manager.dart';
 import 'package:plantly/resources/styles_manager.dart';
 import '../../../business_logic/auth_bloc/auth_bloc.dart';
+import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
@@ -78,60 +80,71 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppSize.s30),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    Colors.white,
-                    bgColor,
-                  ],
+            GestureDetector(
+              onTap: () async {
+                var model = Navigator.of(context);
+                var taskModel = context.read<TaskCubit>();
+                var plantModel = context.read<PlantCubit>();
+
+                await plantModel.fetchPlants();
+                await taskModel.fetchTasks();
+                model.pushNamed(RouteManager.profileScreen);
+              },
+              child: Container(
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppSize.s30),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.topRight,
+                    colors: [
+                      Colors.white,
+                      bgColor,
+                    ],
+                  ),
                 ),
-              ),
-              child: BlocConsumer<ProfileCubit, ProfileState>(
-                listener: (context, state) {
-                  if (state.processStatus == ProcessStatus.loading) {
-                    const LoadingWidget(size: 20);
-                  } else if (state.processStatus == ProcessStatus.error) {
-                    const Text('Error!');
-                  }
-                },
-                builder: (context, state) {
-                  if (state.processStatus != ProcessStatus.success) {
-                    return const LoadingWidget(size: 20);
-                  }
-                  return ListTile(
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Image.network(state.user.profileImg),
-                    ),
-                    title: Text(
-                      state.user.fullname,
-                      style: getRegularStyle(
-                        color: fontColor,
-                        fontSize: FontSize.s16,
+                child: BlocConsumer<ProfileCubit, ProfileState>(
+                  listener: (context, state) {
+                    if (state.processStatus == ProcessStatus.loading) {
+                      const LoadingWidget(size: 20);
+                    } else if (state.processStatus == ProcessStatus.error) {
+                      const Text('Error!');
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state.processStatus != ProcessStatus.success) {
+                      return const LoadingWidget(size: 20);
+                    }
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Image.network(state.user.profileImg),
                       ),
-                    ),
-                    subtitle: Text(
-                      'Last sync. ${DateFormat.yMd().format(DateTime.now())}',
-                      style: getLightStyle(
-                        color: Colors.grey,
-                        fontSize: FontSize.s14,
+                      title: Text(
+                        state.user.fullname,
+                        style: getRegularStyle(
+                          color: fontColor,
+                          fontSize: FontSize.s16,
+                        ),
                       ),
-                    ),
-                    trailing: IconButton(
-                      onPressed: () => Navigator.of(context)
-                          .pushNamed(RouteManager.editSettingsScreen),
-                      icon: const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: accentColor,
+                      subtitle: Text(
+                        'Last sync. ${DateFormat.yMd().format(DateTime.now())}',
+                        style: getLightStyle(
+                          color: Colors.grey,
+                          fontSize: FontSize.s14,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                      trailing: IconButton(
+                        onPressed: () => Navigator.of(context)
+                            .pushNamed(RouteManager.editSettingsScreen),
+                        icon: const Icon(
+                          Icons.arrow_forward_rounded,
+                          color: accentColor,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),

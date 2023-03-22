@@ -18,6 +18,7 @@ import '../../widgets/cool_alert.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/plant_task_text_field.dart';
 import '../../widgets/success_dialog.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateTask extends StatefulWidget {
   const CreateTask({Key? key}) : super(key: key);
@@ -35,6 +36,7 @@ class _CreateTaskState extends State<CreateTask> {
   final TextEditingController repeatController = TextEditingController();
   DateTime date = DateTime.now();
   final GlobalKey<State<StatefulWidget>> _dialogKey = GlobalKey();
+  var uuid = const Uuid();
 
   var currentPlant = '';
   List<Plant> plants = const [];
@@ -159,7 +161,7 @@ class _CreateTaskState extends State<CreateTask> {
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
     final Task task = Task(
-      id: DateTime.now().toString(),
+      id: uuid.v4(),
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
       plantId: plants.firstWhere((plant) => plant.title == currentPlant).id,

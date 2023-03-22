@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plantly/models/plant.dart';
+import 'package:uuid/uuid.dart';
 import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/fields.dart';
@@ -36,6 +37,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  var uuid = const Uuid();
 
   final _picker = ImagePicker();
   XFile? image;
@@ -112,8 +114,9 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
 
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
+
     Plant plant = Plant(
-      id: DateTime.now().toString(),
+      id: uuid.v4(),
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
       imgUrl: downloadLink!,

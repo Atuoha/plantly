@@ -10,14 +10,15 @@ class Task extends Equatable {
   final String repeat;
   final String userId;
 
-  const Task(
-      {required this.id,
-      required this.title,
-      required this.description,
-      required this.plantId,
-      required this.date,
-      required this.repeat,
-      required this.userId});
+  const Task({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.plantId,
+    required this.date,
+    required this.repeat,
+    required this.userId,
+  });
 
   factory Task.initial() => Task(
         id: '',
@@ -37,7 +38,7 @@ class Task extends Equatable {
       title: task['title'],
       description: task['description'],
       plantId: task['plantId'],
-      date: task['date'],
+      date: task['date'].toDate(),
       repeat: task['repeat'],
       userId: task['userId'],
     );

@@ -30,6 +30,19 @@ class TaskCubit extends Cubit<TaskState> {
     }
   }
 
+  Future fetchTasks() async {
+    emit(state.copyWith(status: ProcessStatus.loading));
+    try {
+      final List<Task> tasks = await taskRepository.fetchTasks();
+      emit(state.copyWith(tasks: tasks, status: ProcessStatus.success));
+    } on CustomError catch (e) {
+      emit(state.copyWith(
+        status: ProcessStatus.error,
+        error: e,
+      ));
+    }
+  }
+
   Future<void> editTask({
     required Task task,
     required String id,
@@ -50,19 +63,18 @@ class TaskCubit extends Cubit<TaskState> {
     }
   }
 
-    Future<void> deleteTask({required String id}) async {
-      emit(state.copyWith(status: ProcessStatus.loading));
-      try {
-        await taskRepository.deleteTask(id: id);
-        emit(state.copyWith(
-          status: ProcessStatus.success,
-        ));
-      } on CustomError catch (e) {
-        emit(state.copyWith(
-          status: ProcessStatus.error,
-          error: e,
-        ));
-      }
+  Future<void> deleteTask({required String id}) async {
+    emit(state.copyWith(status: ProcessStatus.loading));
+    try {
+      await taskRepository.deleteTask(id: id);
+      emit(state.copyWith(
+        status: ProcessStatus.success,
+      ));
+    } on CustomError catch (e) {
+      emit(state.copyWith(
+        status: ProcessStatus.error,
+        error: e,
+      ));
     }
   }
-
+}
