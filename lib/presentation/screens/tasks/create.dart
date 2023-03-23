@@ -42,6 +42,7 @@ class _CreateTaskState extends State<CreateTask> {
   var currentPlant = '';
   List<Plant> plants = const [];
   bool isProcessing = false;
+  bool isSubmitBtnPressed = false;
 
   var currentRepeat = '';
   final repeats = [
@@ -146,7 +147,9 @@ class _CreateTaskState extends State<CreateTask> {
       descriptionController.clear();
       dateController.clear();
       isProcessing = false;
+      isSubmitBtnPressed = false;
     });
+    Navigator.of(context).pop();
   }
 
   void submitTask() {
@@ -157,6 +160,10 @@ class _CreateTaskState extends State<CreateTask> {
     if (!valid) {
       return;
     }
+
+    setState(() {
+      isSubmitBtnPressed = true;
+    });
 
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
@@ -365,8 +372,11 @@ class _CreateTaskState extends State<CreateTask> {
                         ),
                         const SizedBox(height: 50),
                         ElevatedButton(
-                          onPressed: () => submitTask(),
-                          child: const Text('Add a Task'),
+                          onPressed: () =>
+                              !isSubmitBtnPressed ? submitTask() : null,
+                          child: Text(
+                            isSubmitBtnPressed ? 'Loading...' : 'Add a Task',
+                          ),
                         )
                       ],
                     ),

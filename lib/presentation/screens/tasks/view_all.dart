@@ -25,7 +25,9 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
   final now = DateTime.now();
   var date = DateTime.now();
 
-  void removeFromList(String id) {}
+  void removeFromList(String taskId) {
+    context.read<TaskCubit>().deleteTask(id: taskId);
+  }
 
   @override
   void initState() {
@@ -173,7 +175,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                           );
                         },
                         child: SingleTaskListView(
-                          id: task['id'],
+                          id: task.id,
                           title: task['title'],
                           description: task['description'],
                           imgUrl: plant.imgUrl,
@@ -255,7 +257,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                           );
                         },
                         child: SingleTaskListView(
-                          id: task['id'],
+                          id: task.id,
                           title: task['title'],
                           description: task['description'],
                           imgUrl: plant.imgUrl,

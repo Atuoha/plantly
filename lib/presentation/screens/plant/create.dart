@@ -47,6 +47,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
   double waterLevel = 1;
   double sunLevel = 1;
   bool isProcessing = false;
+  bool isSubmitBtnPressed = false;
 
   Future selectImage(ImagePathSource source) async {
     XFile? pickedImage;
@@ -88,6 +89,10 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       return;
     }
 
+    setState(() {
+      isSubmitBtnPressed = true;
+    });
+
     if (!isImageSelected) {
       displaySnackBar(
         status: Status.error,
@@ -126,6 +131,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
     );
 
     model.addPlant(plant: plant);
+
   }
 
   void resetForm() {
@@ -134,7 +140,11 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       titleController.clear();
       descriptionController.clear();
       isProcessing = false;
+      isSubmitBtnPressed = false;
+      waterLevel = 1;
+      sunLevel = 1;
     });
+    Navigator.of(context).pop();
   }
 
   @override
@@ -371,8 +381,13 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton(
-                              onPressed: () => submitPlant(),
-                              child: const Text('Add a plant'),
+                              onPressed: () =>
+                                  !isSubmitBtnPressed ? submitPlant() : null,
+                              child: Text(
+                                isSubmitBtnPressed
+                                    ? 'Loading...'
+                                    : 'Add a plant',
+                              ),
                             )
                           ],
                         ),

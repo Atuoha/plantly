@@ -51,7 +51,7 @@ class SingleTaskListView extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(10),
                 ),
-                onPressed: () {},
+                onPressed: ()=>removeFromList(id),
                 child: const Text('Yes'),
               ),
               ElevatedButton(
