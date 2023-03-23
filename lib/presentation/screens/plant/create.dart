@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -43,9 +44,9 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
   XFile? image;
   File? selectedImage;
   bool isImageSelected = false;
-
   double waterLevel = 1;
   double sunLevel = 1;
+  bool isProcessing = false;
 
   Future selectImage(ImagePathSource source) async {
     XFile? pickedImage;
@@ -114,7 +115,6 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
 
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
-
     Plant plant = Plant(
       id: uuid.v4(),
       title: titleController.text.trim(),
@@ -133,8 +133,8 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       isImageSelected = false;
       titleController.clear();
       descriptionController.clear();
+      isProcessing = false;
     });
-    Navigator.of(context).pop();
   }
 
   @override
@@ -181,11 +181,9 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
           child: BlocListener<PlantCubit, PlantState>(
             listener: (context, state) {
               if (state.status == ProcessStatus.loading) {
-                showDialog(
-                  context: context,
-                  builder: (context) => const LoadingWidget(),
-                );
-
+                setState(() {
+                  isProcessing = true;
+                });
               } else if (state.status == ProcessStatus.success) {
                 kCoolAlert(
                   message: '${titleController.text} successfully added!',
@@ -276,108 +274,110 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
                         ],
                       ),
                 const SizedBox(height: 20),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Title',
-                        style: getRegularStyle(
-                          color: fontColor,
-                          fontSize: FontSize.s18,
+                !isProcessing
+                    ? Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Title',
+                              style: getRegularStyle(
+                                color: fontColor,
+                                fontSize: FontSize.s18,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            kTextField(
+                              controller: titleController,
+                              title: 'Title',
+                              textField: Field.title,
+                              maxLine: 1,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Description',
+                              style: getRegularStyle(
+                                color: fontColor,
+                                fontSize: FontSize.s18,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            kTextField(
+                              controller: descriptionController,
+                              title: 'Description',
+                              textField: Field.description,
+                              maxLine: 6,
+                            ),
+                            const SizedBox(height: 15),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Water Level 💦',
+                                  style: getRegularStyle(
+                                    color: fontColor,
+                                    fontSize: FontSize.s18,
+                                  ),
+                                ),
+                                Text(
+                                  'Sun Level 🌞',
+                                  style: getRegularStyle(
+                                    color: fontColor,
+                                    fontSize: FontSize.s18,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Slider(
+                                    value: waterLevel,
+                                    max: 5,
+                                    min: 0,
+                                    onChanged: (value) => setState(() {
+                                      waterLevel = value;
+                                    }),
+                                    onChangeEnd: (value) {
+                                      displaySnackBar(
+                                        status: Status.success,
+                                        message:
+                                            'Water level set to ${waterLevel.toStringAsFixed(0)}',
+                                        context: context,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Slider(
+                                    value: sunLevel,
+                                    max: 5,
+                                    min: 0,
+                                    onChanged: (value) => setState(() {
+                                      sunLevel = value;
+                                    }),
+                                    onChangeEnd: (value) {
+                                      displaySnackBar(
+                                        status: Status.success,
+                                        message:
+                                            'Sun level set to ${sunLevel.toStringAsFixed(0)}',
+                                        context: context,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                              onPressed: () => submitPlant(),
+                              child: const Text('Add a plant'),
+                            )
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      kTextField(
-                        controller: titleController,
-                        title: 'Title',
-                        textField: Field.title,
-                        maxLine: 1,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Description',
-                        style: getRegularStyle(
-                          color: fontColor,
-                          fontSize: FontSize.s18,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      kTextField(
-                        controller: descriptionController,
-                        title: 'Description',
-                        textField: Field.description,
-                        maxLine: 6,
-                      ),
-                      const SizedBox(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Water Level 💦',
-                            style: getRegularStyle(
-                              color: fontColor,
-                              fontSize: FontSize.s18,
-                            ),
-                          ),
-                          Text(
-                            'Sun Level 🌞',
-                            style: getRegularStyle(
-                              color: fontColor,
-                              fontSize: FontSize.s18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Slider(
-                              value: waterLevel,
-                              max: 5,
-                              min: 0,
-                              onChanged: (value) => setState(() {
-                                waterLevel = value;
-                              }),
-                              onChangeEnd: (value) {
-                                displaySnackBar(
-                                  status: Status.success,
-                                  message:
-                                      'Water level set to ${waterLevel.toStringAsFixed(0)}',
-                                  context: context,
-                                );
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: Slider(
-                              value: sunLevel,
-                              max: 5,
-                              min: 0,
-                              onChanged: (value) => setState(() {
-                                sunLevel = value;
-                              }),
-                              onChangeEnd: (value) {
-                                displaySnackBar(
-                                  status: Status.success,
-                                  message:
-                                      'Sun level set to ${sunLevel.toStringAsFixed(0)}',
-                                  context: context,
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () => submitPlant(),
-                        child: const Text('Add a plant'),
                       )
-                    ],
-                  ),
-                ),
+                    : const Center(child: LoadingWidget(size: 50)),
               ],
             ),
           ),

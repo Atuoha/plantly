@@ -1,5 +1,6 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/models/task.dart';
@@ -40,6 +41,7 @@ class _CreateTaskState extends State<CreateTask> {
 
   var currentPlant = '';
   List<Plant> plants = const [];
+  bool isProcessing = false;
 
   var currentRepeat = '';
   final repeats = [
@@ -143,10 +145,8 @@ class _CreateTaskState extends State<CreateTask> {
       titleController.clear();
       descriptionController.clear();
       dateController.clear();
+      isProcessing = false;
     });
-    // Navigator.of(_dialogKey.currentContext!).pop(true);
-
-    Navigator.of(_dialogKey.currentContext!, rootNavigator: true).pop(true);
   }
 
   void submitTask() {
@@ -212,166 +212,166 @@ class _CreateTaskState extends State<CreateTask> {
           vertical: 8.0,
           horizontal: 18.0,
         ),
-        child: Form(
-          key: formKey,
-          child: SingleChildScrollView(
-            child: BlocListener<TaskCubit, TaskState>(
-              listener: (context, state) {
-                if (state.status == ProcessStatus.loading) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      key: _dialogKey,
-                      content: const LoadingWidget(
-                        size: 50,
-                      ),
-                    ),
-                  );
-                } else if (state.status == ProcessStatus.success) {
-                  kCoolAlert(
-                    message: '${titleController.text} successfully added!',
-                    context: context,
-                    alert: CoolAlertType.success,
-                    action: resetForm,
-                  );
-                } else if (state.status == ProcessStatus.error) {
-                  kCoolAlert(
-                    message:
-                        '${titleController.text} can not be added.\n ${state.error}!',
-                    context: context,
-                    alert: CoolAlertType.error,
-                  );
-                }
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Name',
-                    style: getRegularStyle(
-                      color: fontColor,
-                      fontSize: FontSize.s18,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  kTextField(
-                    controller: titleController,
-                    title: 'Title',
-                    maxLine: 1,
-                    textField: Field.title,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Description',
-                    style: getRegularStyle(
-                      color: fontColor,
-                      fontSize: FontSize.s18,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  kTextField(
-                    controller: descriptionController,
-                    title: 'Description',
-                    textField: Field.description,
-                    maxLine: 8,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Plant',
-                    style: getRegularStyle(
-                      color: fontColor,
-                      fontSize: FontSize.s18,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  kDropDown(
-                    dropdown: DropDown.plant,
-                    currentValue: currentPlant,
-                    list: plants.map((plant) => plant.title).toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Date',
-                        style: getRegularStyle(
-                          color: fontColor,
-                          fontSize: FontSize.s18,
-                        ),
-                      ),
-                      Text(
-                        'Repeat',
-                        style: getRegularStyle(
-                          color: fontColor,
-                          fontSize: FontSize.s18,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          readOnly: true,
-                          controller: dateController,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Date can not be empty!';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            suffixIcon: GestureDetector(
-                              onTap: () => pickDate(),
-                              child: const Icon(
-                                Icons.calendar_month,
-                                color: Colors.black,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: primaryColor, width: 1.5),
-                              borderRadius: BorderRadius.circular(AppSize.s20),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: primaryColor, width: 1.5),
-                              borderRadius: BorderRadius.circular(AppSize.s20),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: primaryColor, width: 1.5),
-                              borderRadius: BorderRadius.circular(AppSize.s20),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                  color: Colors.red, width: 1.5),
-                              borderRadius: BorderRadius.circular(AppSize.s20),
-                            ),
+        child: SingleChildScrollView(
+          child: BlocListener<TaskCubit, TaskState>(
+            listener: (context, state) {
+              if (state.status == ProcessStatus.loading) {
+                setState(() {
+                  isProcessing = true;
+                });
+              } else if (state.status == ProcessStatus.success) {
+                kCoolAlert(
+                  message: '${titleController.text} successfully added!',
+                  context: context,
+                  alert: CoolAlertType.success,
+                  action: resetForm,
+                );
+              } else if (state.status == ProcessStatus.error) {
+                kCoolAlert(
+                  message:
+                      '${titleController.text} can not be added.\n ${state.error}!',
+                  context: context,
+                  alert: CoolAlertType.error,
+                );
+              }
+            },
+            child: !isProcessing
+                ? Form(
+                    key: formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Name',
+                          style: getRegularStyle(
+                            color: fontColor,
+                            fontSize: FontSize.s18,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: kDropDown(
-                          dropdown: DropDown.repeat,
-                          currentValue: currentRepeat,
-                          list: repeats,
+                        const SizedBox(height: 5),
+                        kTextField(
+                          controller: titleController,
+                          title: 'Title',
+                          maxLine: 1,
+                          textField: Field.title,
                         ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 50),
-                  ElevatedButton(
-                    onPressed: () => submitTask(),
-                    child: const Text('Add a Task'),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Description',
+                          style: getRegularStyle(
+                            color: fontColor,
+                            fontSize: FontSize.s18,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        kTextField(
+                          controller: descriptionController,
+                          title: 'Description',
+                          textField: Field.description,
+                          maxLine: 8,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'Plant',
+                          style: getRegularStyle(
+                            color: fontColor,
+                            fontSize: FontSize.s18,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        kDropDown(
+                          dropdown: DropDown.plant,
+                          currentValue: currentPlant,
+                          list: plants.map((plant) => plant.title).toList(),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Date',
+                              style: getRegularStyle(
+                                color: fontColor,
+                                fontSize: FontSize.s18,
+                              ),
+                            ),
+                            Text(
+                              'Repeat',
+                              style: getRegularStyle(
+                                color: fontColor,
+                                fontSize: FontSize.s18,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                readOnly: true,
+                                controller: dateController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Date can not be empty!';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(
+                                    onTap: () => pickDate(),
+                                    child: const Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: primaryColor, width: 1.5),
+                                    borderRadius:
+                                        BorderRadius.circular(AppSize.s20),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: primaryColor, width: 1.5),
+                                    borderRadius:
+                                        BorderRadius.circular(AppSize.s20),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: primaryColor, width: 1.5),
+                                    borderRadius:
+                                        BorderRadius.circular(AppSize.s20),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: Colors.red, width: 1.5),
+                                    borderRadius:
+                                        BorderRadius.circular(AppSize.s20),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: kDropDown(
+                                dropdown: DropDown.repeat,
+                                currentValue: currentRepeat,
+                                list: repeats,
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 50),
+                        ElevatedButton(
+                          onPressed: () => submitTask(),
+                          child: const Text('Add a Task'),
+                        )
+                      ],
+                    ),
                   )
-                ],
-              ),
-            ),
+                : const Center(child: LoadingWidget(size: 50)),
           ),
         ),
       ),

@@ -10,8 +10,10 @@ import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/fields.dart';
 import '../../../constants/enums/image_source.dart';
+import '../../../constants/enums/process_status.dart';
 import '../../../models/user.dart';
 import '../../../resources/font_manager.dart';
+import '../../../resources/route_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../widgets/cool_alert.dart';
 import '../../widgets/text_field.dart';
@@ -36,6 +38,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isImageSelected = false;
   String? downloadLink;
   bool isPasswordToBeUpdated = false;
+  bool isProcessing = false;
 
   final _picker = ImagePicker();
   XFile? image;
@@ -173,6 +176,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
   }
 
+  goBack() {
+    Navigator.of(context).pushNamed(RouteManager.profileScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,74 +288,96 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      KTextField(
-                        controller: fullNameController,
-                        hintText: 'Enter your fullname',
-                        label: 'Fullname',
-                        field: Field.fullname,
-                        prefixIcon: Icons.person,
-                      ),
-                      const SizedBox(height: 20),
-                      KTextField(
-                        controller: emailController,
-                        hintText: 'Enter your email address',
-                        label: 'Email',
-                        field: Field.email,
-                        prefixIcon: Icons.email,
-                      ),
-                      const SizedBox(height: 20),
-                      CheckboxListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            isPasswordToBeUpdated
-                                ? 'Do you not want to update your password '
-                                : 'Do you want to update your password?',
-                            style: getMediumStyle(
-                              color: fontColor,
-                              fontSize: FontSize.s16,
-                            ),
-                          ),
-                          checkColor: Colors.white,
-                          activeColor: primaryColor,
-                          checkboxShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          value: isPasswordToBeUpdated,
-                          onChanged: (value) {
-                            setState(() {
-                              isPasswordToBeUpdated = value!;
-                            });
-                          }),
-                      AnimatedOpacity(
-                        opacity: isPasswordToBeUpdated ? 1 : 0,
-                        duration: const Duration(seconds: 2),
-                        child: Column(
-                          children: [
-                            KTextField(
-                              controller: passwordController,
-                              hintText: 'Enter your password',
-                              label: 'Password',
-                              field: Field.password,
-                              prefixIcon: Icons.lock,
-                              isObscured: isObscured,
-                            ),
-                            const SizedBox(height: 20),
-                            KTextField(
-                              controller: passwordController2,
-                              hintText: 'Reenter your password',
-                              label: 'Confirm Password',
-                              field: Field.password2,
-                              prefixIcon: Icons.lock,
-                              isObscured: isObscured2,
-                            ),
-                          ],
+                BlocListener<ProfileCubit, ProfileState>(
+                  listener: (context, state) {
+                    if (state.processStatus == ProcessStatus.loading) {
+                      setState(() {
+                        isProcessing = true;
+                      });
+                    } else if (state.processStatus == ProcessStatus.success) {
+                      kCoolAlert(
+                        message: 'Profile updated successfully added!',
+                        context: context,
+                        alert: CoolAlertType.success,
+                        action: goBack,
+                      );
+                    } else if (state.processStatus == ProcessStatus.error) {
+                      kCoolAlert(
+                        message: 'Opps!.\n ${state.error}!',
+                        context: context,
+                        alert: CoolAlertType.error,
+                      );
+                    }
+                  },
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        KTextField(
+                          controller: fullNameController,
+                          hintText: 'Enter your fullname',
+                          label: 'Fullname',
+                          field: Field.fullname,
+                          prefixIcon: Icons.person,
                         ),
-                      )
-                    ],
+                        const SizedBox(height: 20),
+                        KTextField(
+                          controller: emailController,
+                          hintText: 'Enter your email address',
+                          label: 'Email',
+                          field: Field.email,
+                          prefixIcon: Icons.email,
+                        ),
+                        const SizedBox(height: 20),
+                        CheckboxListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              isPasswordToBeUpdated
+                                  ? 'Do you not want to update your password '
+                                  : 'Do you want to update your password?',
+                              style: getMediumStyle(
+                                color: fontColor,
+                                fontSize: FontSize.s16,
+                              ),
+                            ),
+                            checkColor: Colors.white,
+                            activeColor: primaryColor,
+                            checkboxShape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            value: isPasswordToBeUpdated,
+                            onChanged: (value) {
+                              setState(() {
+                                isPasswordToBeUpdated = value!;
+                              });
+                            }),
+                        AnimatedOpacity(
+                          opacity: isPasswordToBeUpdated ? 1 : 0,
+                          duration: const Duration(seconds: 2),
+                          child: Column(
+                            children: [
+                              KTextField(
+                                controller: passwordController,
+                                hintText: 'Enter your password',
+                                label: 'Password',
+                                field: Field.password,
+                                prefixIcon: Icons.lock,
+                                isObscured: isObscured,
+                              ),
+                              const SizedBox(height: 20),
+                              KTextField(
+                                controller: passwordController2,
+                                hintText: 'Reenter your password',
+                                label: 'Confirm Password',
+                                field: Field.password2,
+                                prefixIcon: Icons.lock,
+                                isObscured: isObscured2,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],
