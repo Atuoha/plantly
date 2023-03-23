@@ -192,15 +192,17 @@ class _AuthScreenState extends State<AuthScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          !isSignInState
-                              ? KTextField(
-                                  controller: fullNameController,
-                                  hintText: 'Enter your fullname',
-                                  label: 'Fullname',
-                                  field: Field.fullname,
-                                  prefixIcon: Icons.person,
-                                )
-                              : const SizedBox.shrink(),
+                          AnimatedOpacity(
+                            opacity: isSignInState ? 0 : 1,
+                            duration: const Duration(seconds: 2),
+                            child: KTextField(
+                              controller: fullNameController,
+                              hintText: 'Enter your fullname',
+                              label: 'Fullname',
+                              field: Field.fullname,
+                              prefixIcon: Icons.person,
+                            ),
+                          ),
                           SizedBox(height: !isSignInState ? 20 : 0),
                           KTextField(
                             controller: emailController,

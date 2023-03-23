@@ -27,7 +27,6 @@ class ProfileRepository {
       print('Hello there is an error from Profile Repo');
       print(e);
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
-
     }
   }
 
@@ -35,7 +34,7 @@ class ProfileRepository {
   Future<void> editUser({
     required String userId,
     required String email,
-    required String password,
+    String password = '',
     required String fullName,
   }) async {
     try {
@@ -44,7 +43,9 @@ class ProfileRepository {
         'fullname': fullName,
       });
       await firebaseAuth.currentUser!.updateEmail(email);
-      await firebaseAuth.currentUser!.updatePassword(password);
+      if (password.isNotEmpty) {
+        await firebaseAuth.currentUser!.updatePassword(password);
+      }
     } on FirebaseException catch (e) {
       throw CustomError(
         errorMsg: e.message!,

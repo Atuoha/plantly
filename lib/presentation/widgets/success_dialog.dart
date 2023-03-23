@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
 
+import '../../constants/color.dart';
 import '../../models/custom_error.dart';
 import '../../models/success.dart';
+import '../../resources/font_manager.dart';
+import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
 
 void successDialog({required BuildContext context, required Success success}) {
@@ -11,7 +14,13 @@ void successDialog({required BuildContext context, required Success success}) {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: Text(success.title),
+        title: Text(
+          success.title,
+          style: getMediumStyle(
+            color: fontColor,
+            fontSize: FontSize.s16,
+          ),
+        ),
         content: Text(success.description),
         actions: [
           CupertinoDialogAction(
@@ -25,7 +34,13 @@ void successDialog({required BuildContext context, required Success success}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(success.title),
+        title: Text(
+          success.title,
+          style: getMediumStyle(
+            color: fontColor,
+            fontSize: FontSize.s16,
+          ),
+        ),
         content: Text(success.description),
         actions: [
           ElevatedButton(

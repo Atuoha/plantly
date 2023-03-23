@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:plantly/resources/styles_manager.dart';
+
+import '../../constants/color.dart';
+import '../../resources/font_manager.dart';
 
 Future<void> areYouSureDialog({
   required String title,
@@ -11,7 +15,13 @@ Future<void> areYouSureDialog({
   return showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(title),
+      title: Text(
+        title,
+        style: getMediumStyle(
+          color: fontColor,
+          fontSize: FontSize.s16,
+        ),
+      ),
       content: Text(content),
       actions: [
         ElevatedButton(
