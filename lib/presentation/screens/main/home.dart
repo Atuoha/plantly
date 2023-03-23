@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,9 +30,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final StreamController<QuerySnapshot> _controller =
+      StreamController<QuerySnapshot>();
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
+
   @override
   void initState() {
     getProfile();
+
+    FirestoreRef.taskRef
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .listen((event) {
+      _controller.add(event);
+    });
     super.initState();
   }
 
@@ -55,15 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-
     // Stream for plants
     Stream<QuerySnapshot> plantStream =
         FirestoreRef.plantRef.where('userId', isEqualTo: userId).snapshots();
-
-    // Streams for tasks
-    Stream<QuerySnapshot> taskStreams =
-        FirestoreRef.taskRef.where('userId', isEqualTo: userId).snapshots();
 
     return Scaffold(
       appBar: AppBar(
@@ -117,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: size.height / 2.3,
               child: StreamBuilder<QuerySnapshot>(
-                stream: taskStreams,
+                stream: _controller.stream,
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return Center(
@@ -141,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Image.asset(AssetManager.empty),
                           Text(
-                            'Tasks are empty!',
+                            'Today\'s Tasks are empty!',
                             style: getRegularStyle(
                               color: Colors.grey,
                             ),
@@ -157,32 +169,60 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       var task = snapshot.data!.docs[index];
                       final plantId = task['plantId'];
-                      retrievePlant(plantId);
 
-                      return GestureDetector(
-                        onTap: () async {
-                          var model = Navigator.of(context);
-                          await context
-                              .read<PlantCubit>()
-                              .fetchPlant(id: plantId);
+                      if (plantId == null) {
+                        return Container(); // Return an empty widget if documentId is null
+                      }
 
-                          model.push(
-                            MaterialPageRoute(
-                              builder: (context) => TaskSingleView(
-                                task: task,
-                                taskDocId: task.id,
+                      return FutureBuilder<QuerySnapshot>(
+                          future: FirestoreRef.plantRef
+                              .where('id', isEqualTo: plantId)
+                              .get(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> plantSnapshot) {
+                            if (plantSnapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  'An error occurred!',
+                                  style: getRegularStyle(
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            var plantDoc = plantSnapshot.data?.docs.first;
+                            String plantImg =
+                                'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png';
+                            if (plantDoc != null) {
+                              plantImg = Plant.fromJson(plantDoc).imgUrl;
+                            }
+
+                            return GestureDetector(
+                              onTap: () async {
+                                var model = Navigator.of(context);
+                                await context
+                                    .read<PlantCubit>()
+                                    .fetchPlant(id: plantId);
+
+                                model.push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskSingleView(
+                                      task: task,
+                                      taskDocId: task.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: SingleTaskListView(
+                                id: task.id,
+                                title: task['title'],
+                                description: task['description'],
+                                imgUrl: plantImg,
+                                removeFromList: removeFromList,
                               ),
-                            ),
-                          );
-                        },
-                        child: SingleTaskListView(
-                          id: task['id'],
-                          title: task['title'],
-                          description: task['description'],
-                          imgUrl: plant.imgUrl,
-                          removeFromList: removeFromList,
-                        ),
-                      );
+                            );
+                          });
                     },
                   );
                 },

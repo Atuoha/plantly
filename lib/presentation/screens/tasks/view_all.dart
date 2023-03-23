@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,26 +31,44 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
     context.read<TaskCubit>().deleteTask(id: taskId);
   }
 
+  final userId = FirebaseAuth.instance.currentUser!.uid;
+  final StreamController<QuerySnapshot> _controller =
+      StreamController<QuerySnapshot>();
+
+  final StreamController<QuerySnapshot> _controller2 =
+      StreamController<QuerySnapshot>();
+
   @override
   void initState() {
     setState(() {
       date = DateTime(now.year, now.month, now.day);
     });
+    FirestoreRef.taskRef
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .listen((event) {
+      _controller.add(event);
+    });
+
+    FirestoreRef.taskRef
+        .where('userId', isEqualTo: userId)
+        .where('date', isEqualTo: date)
+        .snapshots()
+        .listen((event) {
+      _controller2.add(event);
+    });
     super.initState();
   }
 
-  Plant plant = Plant.initial();
-
-  retrievePlant(String plantId) async {
-    var plantData = await context.read<PlantCubit>().fetchPlant(id: plantId);
-    setState(() {
-      plant = plantData;
-    });
+  @override
+  void dispose() {
+    _controller.close();
+    _controller2.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
     Stream<QuerySnapshot> taskStreams =
         FirestoreRef.taskRef.where('userId', isEqualTo: userId).snapshots();
 
@@ -118,7 +138,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
             const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: todayTaskStreams,
+                stream: _controller2.stream,
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return Center(
@@ -157,31 +177,61 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var task = snapshot.data!.docs[index];
-
                       final plantId = task['plantId'];
-                      retrievePlant(plantId);
 
-                      return GestureDetector(
-                        onTap: () async {
-                          var model = Navigator.of(context);
-                          await context
-                              .read<PlantCubit>()
-                              .fetchPlant(id: plantId);
+                      if (plantId == null) {
+                        return Container(); // Return an empty widget if documentId is null
+                      }
 
-                          model.push(
-                            MaterialPageRoute(
-                              builder: (context) => TaskSingleView(task: task, taskDocId: task.id,),
-                            ),
-                          );
-                        },
-                        child: SingleTaskListView(
-                          id: task.id,
-                          title: task['title'],
-                          description: task['description'],
-                          imgUrl: plant.imgUrl,
-                          removeFromList: removeFromList,
-                        ),
-                      );
+                      return FutureBuilder<QuerySnapshot>(
+                          future: FirestoreRef.plantRef
+                              .where('id', isEqualTo: plantId)
+                              .get(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> plantSnapshot) {
+                            if (plantSnapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  'An error occurred!',
+                                  style: getRegularStyle(
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            var plantDoc = plantSnapshot.data?.docs.first;
+                            String plantImg =
+                                'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png';
+                            if (plantDoc != null) {
+                              plantImg = Plant.fromJson(plantDoc).imgUrl;
+                            }
+
+                            return GestureDetector(
+                              onTap: () async {
+                                var model = Navigator.of(context);
+                                await context
+                                    .read<PlantCubit>()
+                                    .fetchPlant(id: plantId);
+
+                                model.push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskSingleView(
+                                      task: task,
+                                      taskDocId: task.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: SingleTaskListView(
+                                id: task.id,
+                                title: task['title'],
+                                description: task['description'],
+                                imgUrl: plantImg,
+                                removeFromList: removeFromList,
+                              ),
+                            );
+                          });
                     },
                   );
                 },
@@ -200,7 +250,7 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
             const SizedBox(height: 10),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: taskStreams,
+                stream: _controller.stream,
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
                     return Center(
@@ -241,29 +291,59 @@ class _ViewAllTasksState extends State<ViewAllTasks> {
                       var task = snapshot.data!.docs[index];
                       final plantId = task['plantId'];
 
-                      retrievePlant(plantId);
+                      if (plantId == null) {
+                        return Container(); // Return an empty widget if documentId is null
+                      }
 
-                      return GestureDetector(
-                        onTap: () async {
-                          var model = Navigator.of(context);
-                          await context
-                              .read<PlantCubit>()
-                              .fetchPlant(id: plantId);
+                      return FutureBuilder<QuerySnapshot>(
+                          future: FirestoreRef.plantRef
+                              .where('id', isEqualTo: plantId)
+                              .get(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> plantSnapshot) {
+                            if (plantSnapshot.hasError) {
+                              return Center(
+                                child: Text(
+                                  'An error occurred!',
+                                  style: getRegularStyle(
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              );
+                            }
 
-                          model.push(
-                            MaterialPageRoute(
-                              builder: (context) => TaskSingleView(task: task, taskDocId: task.id,),
-                            ),
-                          );
-                        },
-                        child: SingleTaskListView(
-                          id: task.id,
-                          title: task['title'],
-                          description: task['description'],
-                          imgUrl: plant.imgUrl,
-                          removeFromList: removeFromList,
-                        ),
-                      );
+                            var plantDoc = plantSnapshot.data?.docs.first;
+                            String plantImg =
+                                'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png';
+                            if (plantDoc != null) {
+                              plantImg = Plant.fromJson(plantDoc).imgUrl;
+                            }
+
+                            return GestureDetector(
+                              onTap: () async {
+                                var model = Navigator.of(context);
+                                await context
+                                    .read<PlantCubit>()
+                                    .fetchPlant(id: plantId);
+
+                                model.push(
+                                  MaterialPageRoute(
+                                    builder: (context) => TaskSingleView(
+                                      task: task,
+                                      taskDocId: task.id,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: SingleTaskListView(
+                                id: task.id,
+                                title: task['title'],
+                                description: task['description'],
+                                imgUrl: plantImg,
+                                removeFromList: removeFromList,
+                              ),
+                            );
+                          });
                     },
                   );
                 },

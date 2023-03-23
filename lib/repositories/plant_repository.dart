@@ -32,7 +32,8 @@ class PlantRepository {
 
   Future<List<Plant>> fetchPlants() async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
-    final Query query = FirestoreRef.plantRef.where('userId', isEqualTo: userId);
+    final Query query =
+        FirestoreRef.plantRef.where('userId', isEqualTo: userId);
 
     try {
       final QuerySnapshot querySnapshot = await query.get();
@@ -78,11 +79,14 @@ class PlantRepository {
     final Query query = FirestoreRef.plantRef.where('id', isEqualTo: id.trim());
     try {
       final QuerySnapshot querySnapshot = await query.get();
-      final List<DocumentSnapshot> documents = querySnapshot.docs;
+      // final List<DocumentSnapshot> documents = querySnapshot.docs;
+      // Plant plant = Plant.initial();
+      // for (var document in documents) {
+      //   plant = Plant.fromJson(document);
+      // }
+      final document = querySnapshot.docs.first;
       Plant plant = Plant.initial();
-      for (var document in documents) {
-        plant = Plant.fromJson(document);
-      }
+      plant = Plant.fromJson(document);
       return plant;
     } on FirebaseException catch (e) {
       throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);

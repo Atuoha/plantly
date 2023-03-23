@@ -102,7 +102,7 @@ class SingleTaskListView extends StatelessWidget {
                       width: MediaQuery.of(context).size.width /1.7,
                       child: Text(
                         description,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: getRegularStyle(
                           color: fontColor,
