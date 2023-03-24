@@ -102,6 +102,9 @@ class PlantApp extends StatelessWidget {
               authRepository: context.read<AuthRepository>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => SearchCubit(),
+          ),
         ],
         child: MaterialApp(
           theme: getLightTheme(),
