@@ -37,6 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final formKey = GlobalKey<FormState>();
   bool isSignInState = true;
   bool isObscured = true;
+  bool isProcessing = false;
 
   @override
   void initState() {
@@ -86,6 +87,14 @@ class _AuthScreenState extends State<AuthScreen> {
     context.read<GoogleAuthCubit>().googleAuth();
   }
 
+  // dismiss error dialog
+  dismiss() {
+    setState(() {
+      isProcessing = false;
+    });
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,15 +111,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<SignInCubit, SignInState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      kCoolAlert(
-                        message: 'Loading...please wait',
-                        context: context,
-                        alert: CoolAlertType.loading,
-                      );
+                      setState(() {
+                        isProcessing = true;
+                      });
                     } else if (state.status == ProcessStatus.error) {
-                      errorDialog(context: context, error: state.error);
                       kCoolAlert(
-                        message: 'An error occurred! ${state.error}!',
+                        message: 'An error occurred! ${state.error.errorMsg}!',
                         context: context,
                         alert: CoolAlertType.error,
                       );
@@ -121,15 +127,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<SignUpCubit, SignUpState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      kCoolAlert(
-                        message: 'Loading...please wait',
-                        context: context,
-                        alert: CoolAlertType.loading,
-                      );
+                      setState(() {
+                        isProcessing = true;
+                      });
                     } else if (state.status == ProcessStatus.error) {
-                      errorDialog(context: context, error: state.error);
                       kCoolAlert(
-                        message: 'An error occurred! ${state.error}!',
+                        message: 'An error occurred! ${state.error.errorMsg}!',
                         context: context,
                         alert: CoolAlertType.error,
                       );
@@ -140,18 +143,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   BlocListener<GoogleAuthCubit, GoogleAuthState>(
                       listener: (context, state) {
                     if (state.status == ProcessStatus.loading) {
-                      kCoolAlert(
-                        message: 'Loading...please wait',
-                        context: context,
-                        alert: CoolAlertType.loading,
-                      );
+                      setState(() {
+                        isProcessing = true;
+                      });
                     } else if (state.status == ProcessStatus.error) {
-                      errorDialog(context: context, error: state.error);
                       kCoolAlert(
-                        message: 'An error occurred! ${state.error}!',
-                        context: context,
-                        alert: CoolAlertType.error,
-                      );
+                          message:
+                              'An error occurred! ${state.error.errorMsg}!',
+                          context: context,
+                          alert: CoolAlertType.error,
+                          action: dismiss);
                     }
                   }),
 
@@ -187,93 +188,98 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                     const SizedBox(height: 50),
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          AnimatedOpacity(
-                            opacity: isSignInState ? 0 : 1,
-                            duration: const Duration(seconds: 2),
-                            child: KTextField(
-                              controller: fullNameController,
-                              hintText: 'Enter your fullname',
-                              label: 'Fullname',
-                              field: Field.fullname,
-                              prefixIcon: Icons.person,
-                            ),
-                          ),
-                          SizedBox(height: !isSignInState ? 20 : 0),
-                          KTextField(
-                            controller: emailController,
-                            hintText: 'Enter your email address',
-                            label: 'Email',
-                            field: Field.email,
-                            prefixIcon: Icons.email,
-                          ),
-                          const SizedBox(height: 20),
-                          KTextField(
-                            controller: passwordController,
-                            hintText: 'Enter your password',
-                            label: 'Password',
-                            field: Field.password,
-                            prefixIcon: Icons.lock,
-                            isObscured: isObscured,
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => submitAuthForm(),
-                            child: Text(isSignInState ? 'Sign In' : 'Sign Up'),
-                          ),
-                          const SizedBox(height: 10),
-                          ActionWrap(
-                            title: 'Forgot your password?',
-                            actionTitle: 'Restore',
-                            action: navigateToForgotPassword,
-                          ),
-                          const SizedBox(height: 20),
-                          Center(
-                            child: Text(
-                              'Or',
-                              style: getRegularStyle(color: accentColor),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: liteGrey,
-                            ),
-                            onPressed: () => googleAuthenticate(),
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
+                    !isProcessing
+                        ? Form(
+                            key: formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Image.asset(
-                                  AssetManager.googleImage,
-                                  width: AppSize.s20,
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  isSignInState ? 'Sign In' : 'Sign up',
-                                  style: getRegularStyle(
-                                    color: accentColor,
-                                    fontSize: FontSize.s16,
-                                    fontWeight: FontWeightManager.bold,
+                                AnimatedOpacity(
+                                  opacity: isSignInState ? 0 : 1,
+                                  duration: const Duration(seconds: 2),
+                                  child: KTextField(
+                                    controller: fullNameController,
+                                    hintText: 'Enter your fullname',
+                                    label: 'Fullname',
+                                    field: Field.fullname,
+                                    prefixIcon: Icons.person,
                                   ),
+                                ),
+                                SizedBox(height: !isSignInState ? 20 : 0),
+                                KTextField(
+                                  controller: emailController,
+                                  hintText: 'Enter your email address',
+                                  label: 'Email',
+                                  field: Field.email,
+                                  prefixIcon: Icons.email,
+                                ),
+                                const SizedBox(height: 20),
+                                KTextField(
+                                  controller: passwordController,
+                                  hintText: 'Enter your password',
+                                  label: 'Password',
+                                  field: Field.password,
+                                  prefixIcon: Icons.lock,
+                                  isObscured: isObscured,
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton(
+                                  onPressed: () => submitAuthForm(),
+                                  child: Text(
+                                      isSignInState ? 'Sign In' : 'Sign Up'),
+                                ),
+                                const SizedBox(height: 10),
+                                ActionWrap(
+                                  title: 'Forgot your password?',
+                                  actionTitle: 'Restore',
+                                  action: navigateToForgotPassword,
+                                ),
+                                const SizedBox(height: 20),
+                                Center(
+                                  child: Text(
+                                    'Or',
+                                    style: getRegularStyle(color: accentColor),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: liteGrey,
+                                  ),
+                                  onPressed: () => googleAuthenticate(),
+                                  child: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        AssetManager.googleImage,
+                                        width: AppSize.s20,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        isSignInState ? 'Sign In' : 'Sign up',
+                                        style: getRegularStyle(
+                                          color: accentColor,
+                                          fontSize: FontSize.s16,
+                                          fontWeight: FontWeightManager.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ActionWrap(
+                                  title: isSignInState
+                                      ? "Don't have an account?"
+                                      : "Already have an account?",
+                                  actionTitle:
+                                      isSignInState ? "Create" : "Sign In",
+                                  action: switchSignState,
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          ActionWrap(
-                            title: isSignInState
-                                ? "Don't have an account?"
-                                : "Already have an account?",
-                            actionTitle: isSignInState ? "Create" : "Sign In",
-                            action: switchSignState,
-                          ),
-                        ],
-                      ),
-                    )
+                          )
+                        : const Center(child: LoadingWidget(size: 50)),
                   ],
                 ),
               ),

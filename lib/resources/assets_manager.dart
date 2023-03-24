@@ -8,4 +8,7 @@ class AssetManager{
   static const String splashImage2 = "$imagePath/sp2.png";
   static const String error = "$imagePath/error3.png";
   static const String profile = "$imagePath/profile.png";
+  static const String angryEmoji = "$imagePath/angry.png";
+  static const String happyEmoji = "$imagePath/love.png";
+
 }

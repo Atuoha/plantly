@@ -6,6 +6,7 @@ import 'package:plantly/presentation/screens/plant/edit.dart';
 import 'package:plantly/resources/values_manager.dart';
 import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../constants/color.dart';
+import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/styles_manager.dart';
 import '../../utils/black_white_image_conversion.dart';
@@ -139,11 +140,11 @@ class _SinglePlantScreenState extends State<SinglePlantScreen>
             onTap: () => switchIndex(0),
             child: emojiIndex == 0
                 ? Image.asset(
-                    'assets/images/love.png',
+                    AssetManager.happyEmoji,
                     width: 40,
                   )
                 : const BlackAndWhiteImage(
-                    imageUrl: 'assets/images/love.png',
+                    imageUrl: AssetManager.happyEmoji,
                     width: 40,
                   ),
           ),
@@ -151,11 +152,11 @@ class _SinglePlantScreenState extends State<SinglePlantScreen>
             onTap: () => switchIndex(1),
             child: emojiIndex == 1
                 ? Image.asset(
-                    'assets/images/angry.png',
+                    AssetManager.angryEmoji,
                     width: 40,
                   )
                 : const BlackAndWhiteImage(
-                    imageUrl: 'assets/images/angry.png',
+                    imageUrl: AssetManager.angryEmoji,
                     width: 40,
                   ),
           ),

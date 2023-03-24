@@ -9,6 +9,7 @@ import '../../../business_logic/profile/profile_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
 import '../../../constants/firestore_refs.dart';
+import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
 import '../../../resources/route_manager.dart';
 import '../../components/plant_single_gridview.dart';
@@ -28,15 +29,16 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
     getProfile();
     super.initState();
   }
-
+  String  userId = "";
   void getProfile() {
-    final userId = context.read<AuthBloc>().state.user!.uid;
+     userId = context.read<AuthBloc>().state.user!.uid;
     context.read<ProfileCubit>().fetchProfile(userId: userId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // plant stream
     Stream<QuerySnapshot> plantStream =
         FirestoreRef.plantRef.where('userId', isEqualTo: userId).snapshots();
 
@@ -114,7 +116,7 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Image.asset(AssetManager.empty),
+                        Image.asset(AssetManager.angryEmoji),
                         Text(
                           'Plants are empty!',
                           style: getRegularStyle(

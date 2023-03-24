@@ -1,26 +1,20 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/resources/styles_manager.dart';
 import '../../../business_logic/auth_bloc/auth_bloc.dart';
-import '../../../business_logic/plant/plant_cubit.dart';
 import '../../../business_logic/profile/profile_cubit.dart';
+import '../../../business_logic/task/task_cubit.dart';
 import '../../../constants/color.dart';
 import '../../../constants/enums/process_status.dart';
 import '../../../constants/firestore_refs.dart';
-import '../../../models/plant.dart';
+import '../../../resources/assets_manager.dart';
 import '../../../resources/font_manager.dart';
-import '../../../resources/route_manager.dart';
-import '../../../resources/values_manager.dart';
 import '../../components/single_plant_listview.dart';
-import '../../components/task_single_listview.dart';
+import '../../utils/task_stream_builder.dart';
 import '../../widgets/loading.dart';
-import '../../widgets/searchbox.dart';
 import '../plant/single_view.dart';
-import '../tasks/single_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -30,9 +24,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // stream controller
   final StreamController<QuerySnapshot> _controller =
       StreamController<QuerySnapshot>();
-  final userId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void dispose() {
@@ -44,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     getProfile();
 
+    // task stream
     FirestoreRef.taskRef
         .where('userId', isEqualTo: userId)
         .snapshots()
@@ -53,20 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  // get profile details
+  String userId = "";
+
   void getProfile() {
-    final userId = context.read<AuthBloc>().state.user!.uid;
+    userId = context.read<AuthBloc>().state.user!.uid;
     context.read<ProfileCubit>().fetchProfile(userId: userId);
   }
 
-  void removeFromList() {}
-
-  Plant plant = Plant.initial();
-
-  retrievePlant(String plantId) async {
-    var plantData = await context.read<PlantCubit>().fetchPlant(id: plantId);
-    setState(() {
-      plant = plantData;
-    });
+  // remove plant
+  void removeFromList(String taskId) {
+    context.read<TaskCubit>().deleteTask(id: taskId);
   }
 
   @override
@@ -128,104 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 10),
             SizedBox(
               height: size.height / 2.3,
-              child: StreamBuilder<QuerySnapshot>(
+              child: TaskStreamBuilder(
                 stream: _controller.stream,
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'An error occurred!',
-                        style: getRegularStyle(
-                          color: primaryColor,
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: LoadingWidget(size: 50));
-                  }
-
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Image.asset(AssetManager.empty),
-                          Text(
-                            'Today\'s Tasks are empty!',
-                            style: getRegularStyle(
-                              color: Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var task = snapshot.data!.docs[index];
-                      final plantId = task['plantId'];
-
-                      if (plantId == null) {
-                        return Container(); // Return an empty widget if documentId is null
-                      }
-
-                      return FutureBuilder<QuerySnapshot>(
-                          future: FirestoreRef.plantRef
-                              .where('id', isEqualTo: plantId)
-                              .get(),
-                          builder: (context,
-                              AsyncSnapshot<QuerySnapshot> plantSnapshot) {
-                            if (plantSnapshot.hasError) {
-                              return Center(
-                                child: Text(
-                                  'An error occurred!',
-                                  style: getRegularStyle(
-                                    color: primaryColor,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            var plantDoc = plantSnapshot.data?.docs.first;
-                            String plantImg =
-                                'https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png';
-                            if (plantDoc != null) {
-                              plantImg = Plant.fromJson(plantDoc).imgUrl;
-                            }
-
-                            return GestureDetector(
-                              onTap: () async {
-                                var model = Navigator.of(context);
-                                await context
-                                    .read<PlantCubit>()
-                                    .fetchPlant(id: plantId);
-
-                                model.push(
-                                  MaterialPageRoute(
-                                    builder: (context) => TaskSingleView(
-                                      task: task,
-                                      taskDocId: task.id,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: SingleTaskListView(
-                                id: task.id,
-                                title: task['title'],
-                                description: task['description'],
-                                imgUrl: plantImg,
-                                removeFromList: removeFromList,
-                              ),
-                            );
-                          });
-                    },
-                  );
-                },
+                errorMessage: 'Tasks are empty!',
               ),
             ),
             const SizedBox(height: 10),
@@ -262,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Image.asset(AssetManager.empty),
+                          Image.asset(AssetManager.angryEmoji),
                           Text(
                             'Plants are empty!',
                             style: getRegularStyle(

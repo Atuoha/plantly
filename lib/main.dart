@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plantly/business_logic/exports.dart';
+import 'package:plantly/business_logic/forgot_password/forgot_password_cubit.dart';
 import 'package:plantly/presentation/entry.dart';
 import 'package:plantly/repositories/repositories.dart';
 import 'package:plantly/resources/route_manager.dart';
@@ -94,6 +95,11 @@ class PlantApp extends StatelessWidget {
           BlocProvider(
             create: (context) => TaskCubit(
               taskRepository: context.read<TaskRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ForgotPasswordCubit(
+              authRepository: context.read<AuthRepository>(),
             ),
           ),
         ],

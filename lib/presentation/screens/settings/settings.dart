@@ -34,6 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void triggerSignOut() {
     context.read<AuthBloc>().add(SignOutEvent());
+    Navigator.of(context).pushNamed(RouteManager.authScreen);
   }
 
   void signOut() {

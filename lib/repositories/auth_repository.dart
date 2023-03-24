@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fbauth;
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/custom_error.dart';
@@ -12,6 +13,7 @@ class AuthRepository {
   AuthRepository({required this.firebaseAuth, required this.firebaseFirestore});
 
   Stream<fbauth.User?> get user => firebaseAuth.userChanges();
+  var error = 'Error occurred!';
 
   // sign up
   Future<void> signup({
@@ -31,12 +33,24 @@ class AuthRepository {
             'https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=612x612&w=0&k=20&c=s0aTdmT5aU6b8ot7VKm11DeID6NctRCpB755rA1BIP0=',
         'auth_type': 'email/password'
       });
-
     } on fbauth.FirebaseAuthException catch (e) {
-      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+      if (e.message != null) {
+        if (e.code == 'user-not-found') {
+          error = "Email not recognised!";
+        } else if (e.code == 'account-exists-with-different-credential') {
+          error = "Email already in use!";
+        } else if (e.code == 'wrong-password') {
+          error = 'Email or Password Incorrect!';
+        } else if (e.code == 'network-request-failed') {
+          error = 'Network error!';
+        } else {
+          error = e.code;
+        }
+      }
+      throw CustomError(errorMsg: error, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
       throw CustomError(
-        errorMsg: e.toString(),
+        errorMsg: error,
         code: 'Exception',
         plugin: 'Firebase/Exception',
       );
@@ -49,10 +63,23 @@ class AuthRepository {
       await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
     } on fbauth.FirebaseAuthException catch (e) {
-      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+      if (e.message != null) {
+        if (e.code == 'user-not-found') {
+          error = "Email not recognised!";
+        } else if (e.code == 'account-exists-with-different-credential') {
+          error = "Email already in use!";
+        } else if (e.code == 'wrong-password') {
+          error = 'Email or Password Incorrect!';
+        } else if (e.code == 'network-request-failed') {
+          error = 'Network error!';
+        } else {
+          error = e.code;
+        }
+      }
+      throw CustomError(errorMsg: error, code: e.code, plugin: e.plugin);
     } on CustomError catch (e) {
       throw CustomError(
-        errorMsg: e.toString(),
+        errorMsg: error,
         code: 'Exception',
         plugin: 'Firebase/Exception',
       );
@@ -83,12 +110,26 @@ class AuthRepository {
         'profileImg': user.photoURL,
         'auth_type': 'GoogleAuth',
       });
-    } on fbauth.FirebaseAuthException catch (e) {
-      throw CustomError(code: e.code, errorMsg: e.message!, plugin: e.plugin);
+    } on PlatformException catch (e) {
+      if (e.code == 'sign_in_canceled') {
+        error = 'Google Sign-In was cancelled by the user';
+      } else if (e.code == 'network_error') {
+        error = 'A network error occurred while signing in';
+      } else if (e.code == 'account_exists_with_different_credential') {
+        error =
+            'the user already has an account with the same email address but with different sign-in credentials';
+      } else if (e.code == 'sign_in_failed') {
+        error = 'the sign-in process failed for some reason.';
+      } else {
+        error = 'Google Sign-In Error: $e';
+        // handle other error codes
+      }
+      throw CustomError(
+          code: e.code, errorMsg: error, plugin: 'firebase/exception');
     } catch (e) {
       throw CustomError(
         code: 'Exception',
-        errorMsg: e.toString(),
+        errorMsg: error,
         plugin: 'firebase_exception/server_error',
       );
     }

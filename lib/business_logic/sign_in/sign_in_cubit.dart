@@ -15,7 +15,6 @@ class SignInCubit extends Cubit<SignInState> {
     emit(state.copyWith(status: ProcessStatus.loading));
     try {
       await authRepository.signIn(email: email, password: password);
-
       emit(state.copyWith(status: ProcessStatus.success));
     } on CustomError catch (e) {
       emit(state.copyWith(status: ProcessStatus.error, error: e));
