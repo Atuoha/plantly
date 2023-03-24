@@ -124,46 +124,42 @@ class _SearchBoxState extends State<SearchBox>
                             Icons.tune,
                             color: primaryColor,
                           ),
-                          AnimatedOpacity(
-                            opacity: isFilterFullyExpanded ? 1 : 0,
-                            duration: const Duration(seconds: 1),
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Text(
-                                  'Name',
-                                  style: getMediumStyle(
-                                    color: fontColor,
-                                  ),
-                                ),
-                                const SizedBox(width: 5),
-                                const Icon(
-                                  Icons.unfold_more,
-                                  color: fontColor,
+                          isFilterFullyExpanded
+                              ? Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Name',
+                                      style: getMediumStyle(
+                                        color: fontColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.unfold_more,
+                                      color: fontColor,
+                                    )
+                                  ],
                                 )
-                              ],
-                            ),
-                          ),
-                          AnimatedOpacity(
-                            opacity: isFilterFullyExpanded ? 1 : 0,
-                            duration: const Duration(seconds: 1),
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Text(
-                                  'Date',
-                                  style: getMediumStyle(
-                                    color: fontColor,
-                                  ),
-                                ),
-                                const SizedBox(width: 5),
-                                const Icon(
-                                  Icons.unfold_more,
-                                  color: fontColor,
+                              : const SizedBox.shrink(),
+                          isFilterFullyExpanded
+                              ? Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Date',
+                                      style: getMediumStyle(
+                                        color: fontColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.unfold_more,
+                                      color: fontColor,
+                                    )
+                                  ],
                                 )
-                              ],
-                            ),
-                          )
+                              : const SizedBox.shrink()
                         ],
                       ),
                     ),
