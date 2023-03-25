@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:plantly/models/custom_error.dart';
+import '../constants/enums/plant_filter.dart';
 import '../constants/firestore_refs.dart';
 import '../models/plant.dart';
 
@@ -34,6 +35,61 @@ class PlantRepository {
     final userId = FirebaseAuth.instance.currentUser!.uid;
     final Query query =
         FirestoreRef.plantRef.where('userId', isEqualTo: userId);
+
+    try {
+      final QuerySnapshot querySnapshot = await query.get();
+      final List<DocumentSnapshot> documents = querySnapshot.docs;
+      List<Plant> plants = [];
+      for (var document in documents) {
+        var plant = Plant.fromJson(document);
+        plants.add(plant);
+      }
+      return plants;
+    } on FirebaseException catch (e) {
+      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+    } on CustomError catch (e) {
+      throw CustomError(
+        errorMsg: e.code,
+        code: 'Firebase Exemption',
+        plugin: 'Firebase error/flutter',
+      );
+    }
+  }
+
+  Future<List<Plant>> fetchSearchPlants(String keyword) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final Query query = FirestoreRef.plantRef
+        .where('userId', isEqualTo: userId)
+        .where('title', isGreaterThanOrEqualTo: keyword);
+
+    try {
+      final QuerySnapshot querySnapshot = await query.get();
+      final List<DocumentSnapshot> documents = querySnapshot.docs;
+      List<Plant> plants = [];
+      for (var document in documents) {
+        var plant = Plant.fromJson(document);
+        plants.add(plant);
+      }
+      return plants;
+    } on FirebaseException catch (e) {
+      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+    } on CustomError catch (e) {
+      throw CustomError(
+        errorMsg: e.code,
+        code: 'Firebase Exemption',
+        plugin: 'Firebase error/flutter',
+      );
+    }
+  }
+
+  Future<List<Plant>> fetchFilteredPlants(PlantFilter filter) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    Query? query;
+    if (filter == PlantFilter.name) {
+      query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('title',descending: true);
+    } else {
+      query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('date',descending: true);
+    }
 
     try {
       final QuerySnapshot querySnapshot = await query.get();

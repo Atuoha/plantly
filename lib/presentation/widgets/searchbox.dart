@@ -28,6 +28,7 @@ class _SearchBoxState extends State<SearchBox>
   }
 
   void submitSearch() {
+    FocusScope.of(context).unfocus();
     if (searchText.text.isEmpty) {
       displaySnackBar(
         status: Status.error,
