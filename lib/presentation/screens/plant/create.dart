@@ -128,6 +128,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
       waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
       sunLevel: int.parse(sunLevel.toStringAsFixed(0)),
       userId: userId,
+      date: DateTime.now(),
     );
 
     model.addPlant(plant: plant);

@@ -136,6 +136,7 @@ class _EditPlantScreenState extends State<EditPlantScreen> {
       waterLevel: int.parse(waterLevel.toStringAsFixed(0)),
       sunLevel: int.parse(waterLevel.toStringAsFixed(0)),
       userId: userId,
+      date: DateTime.now(),
     );
 
     model.editPlant(plant: plant, id: widget.plant['id']);

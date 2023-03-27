@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:plantly/presentation/screens/plant/edit.dart';
 import 'package:plantly/resources/values_manager.dart';
 import '../../../business_logic/plant/plant_cubit.dart';
@@ -194,7 +195,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen>
             const SizedBox(height: 5),
 
             Text(
-              widget.plant['title'],
+              DateFormat.yMEd().format(widget.plant['date']).toString(),
               style: getRegularStyle(
                 color: Colors.grey,
                 fontSize: FontSize.s13,

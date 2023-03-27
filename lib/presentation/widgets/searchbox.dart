@@ -20,6 +20,8 @@ class _SearchBoxState extends State<SearchBox>
   final TextEditingController searchText = TextEditingController();
   bool _isExpanded = true;
   bool isFilterFullyExpanded = false;
+  bool isNameSorted = false;
+  bool isDateSorted  = false;
 
   void toggleFilterSize() {
     setState(() {

@@ -22,6 +22,10 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
     required this.searchCubit,
     required this.plantRepository,
   }) : super(FilteredPlantsState.initial()) {
+
+
+
+
     // listening to search cubit
     filterSubscription = searchCubit.stream.listen((searchState) async {
       List<Plant> plants =
