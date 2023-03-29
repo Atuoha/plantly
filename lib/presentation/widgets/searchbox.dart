@@ -22,7 +22,7 @@ class _SearchBoxState extends State<SearchBox>
   bool _isExpanded = true;
   bool isFilterFullyExpanded = false;
   bool isNameSorted = false;
-  bool isDateSorted  = false;
+  bool isDateSorted = false;
 
   void toggleFilterSize() {
     setState(() {
@@ -43,8 +43,7 @@ class _SearchBoxState extends State<SearchBox>
     context.read<SearchCubit>().searchKeyword(searchText.text.trim());
   }
 
-
-  void setFilter({required PlantFilter filter}){
+  void setFilter({required PlantFilter filter}) {
     print(filter);
     context.read<FilterCubit>().changeFilter(filter);
   }
@@ -103,20 +102,20 @@ class _SearchBoxState extends State<SearchBox>
               ),
             ),
           ),
-          GestureDetector(
-            onTap: () => toggleFilterSize(),
-            child: AnimatedContainer(
-              curve: Curves.easeIn,
-              decoration: _isExpanded
-                  ? const BoxDecoration()
-                  : BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(AppSize.s100),
-                    ),
-              duration: const Duration(seconds: 1),
-              width: _isExpanded ? size.width * 0.12 : size.width * 0.8,
-              child: _isExpanded
-                  ? const CircleAvatar(
+          AnimatedContainer(
+            curve: Curves.easeIn,
+            decoration: _isExpanded
+                ? const BoxDecoration()
+                : BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(AppSize.s100),
+                  ),
+            duration: const Duration(seconds: 1),
+            width: _isExpanded ? size.width * 0.12 : size.width * 0.8,
+            child: _isExpanded
+                ? GestureDetector(
+                    onTap: () => toggleFilterSize(),
+                    child: const CircleAvatar(
                       backgroundColor: searchBoxBg,
                       radius: 24,
                       child: Center(
@@ -125,62 +124,67 @@ class _SearchBoxState extends State<SearchBox>
                           color: Colors.black,
                         ),
                       ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(11.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Icon(
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(11.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () => toggleFilterSize(),
+                          child: const Icon(
                             Icons.tune,
                             color: primaryColor,
                           ),
-                          isFilterFullyExpanded
-                              ? GestureDetector(
-                            onTap: ()=> setFilter(filter: PlantFilter.name),
-                            child: Wrap(
-                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Name',
-                                        style: getMediumStyle(
-                                          color: fontColor,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      const Icon(
-                                        Icons.unfold_more,
-                                        color: fontColor,
-                                      )
-                                    ],
-                                  ),
-                              )
-                              : const SizedBox.shrink(),
-                          isFilterFullyExpanded
-                              ? GestureDetector(
-                            onTap: ()=> setFilter(filter: PlantFilter.date),
+                        ),
+                        isFilterFullyExpanded
+                            ? GestureDetector(
+                                onTap: () =>
+                                    setFilter(filter: PlantFilter.name),
                                 child: Wrap(
-                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Date',
-                                        style: getMediumStyle(
-                                          color: fontColor,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      const Icon(
-                                        Icons.unfold_more,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Name',
+                                      style: getMediumStyle(
                                         color: fontColor,
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.unfold_more,
+                                      color: fontColor,
+                                    )
+                                  ],
+                                ),
                               )
-                              : const SizedBox.shrink()
-                        ],
-                      ),
+                            : const SizedBox.shrink(),
+                        isFilterFullyExpanded
+                            ? GestureDetector(
+                                onTap: () =>
+                                    setFilter(filter: PlantFilter.date),
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Date',
+                                      style: getMediumStyle(
+                                        color: fontColor,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.unfold_more,
+                                      color: fontColor,
+                                    )
+                                  ],
+                                ),
+                              )
+                            : const SizedBox.shrink()
+                      ],
                     ),
-            ),
+                  ),
           ),
         ],
       ),

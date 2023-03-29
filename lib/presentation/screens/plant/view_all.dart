@@ -97,21 +97,19 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
             const SizedBox(height: 10),
             MultiBlocListener(
               listeners: [
-
                 //
                 BlocListener<SearchCubit, SearchState>(
                     listener: (context, state) {
-                  context.read<FilteredPlantsCubit>().setSearchedPlants(
-                      plants: context.read<PlantCubit>().state.plants,
-                      keyword: state.keyword);
+                  context
+                      .read<FilteredPlantsCubit>()
+                      .setSearchedPlants(keyword: state.keyword);
                 }),
-
 
                 BlocListener<FilterCubit, FilterState>(
                     listener: (context, state) {
-                  context.read<FilteredPlantsCubit>().setFilteredPlants(
-                      plants: context.read<PlantCubit>().state.plants,
-                      plantFilter: state.plantFilter);
+                  context
+                      .read<FilteredPlantsCubit>()
+                      .setFilteredPlants(plantFilter: state.plantFilter);
                 })
               ],
               child: StreamBuilder<QuerySnapshot>(

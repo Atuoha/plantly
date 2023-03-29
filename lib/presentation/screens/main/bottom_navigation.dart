@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/presentation/presentation_export.dart';
+import '../../../business_logic/exports.dart';
 import '../../../constants/color.dart';
+import '../../../models/plant.dart';
 
 class BottomNavigationScreen extends StatefulWidget {
   const BottomNavigationScreen({Key? key}) : super(key: key);
@@ -23,6 +26,20 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     setState(() {
       currentPageIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    assignPlants();
+    super.didChangeDependencies();
+  }
+
+  // setting plants
+  assignPlants() async {
+    var model = context.read<FilteredPlantsCubit>();
+    List<Plant> plants = await context.read<PlantCubit>().fetchPlants();
+    model.setPlants(plants);
+    print(plants);
   }
 
   @override

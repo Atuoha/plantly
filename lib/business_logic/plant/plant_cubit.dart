@@ -34,6 +34,7 @@ class PlantCubit extends Cubit<PlantState> {
     emit(state.copyWith(status: ProcessStatus.loading));
     try {
       final List<Plant> plants = await plantRepository.fetchPlants();
+      return plants;
       emit(state.copyWith(plants: plants,status:ProcessStatus.success));
     } on CustomError catch (e) {
       emit(state.copyWith(

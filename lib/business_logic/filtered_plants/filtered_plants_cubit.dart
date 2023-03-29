@@ -12,17 +12,22 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
   FilteredPlantsCubit({required this.plants})
       : super(FilteredPlantsState(plants: plants));
 
+
+  void setPlants(List<Plant> plants) {
+    emit(state.copyWith(plants: plants));
+    print('FILTERED PLANTS: ${state.plants}');
+  }
+
   // searching for plants
   void setSearchedPlants({
-    required List<Plant> plants,
     required String keyword,
   }) {
     List<Plant> searchedPlants;
 
-    searchedPlants = plants
+    searchedPlants = state.plants
         .where((plant) =>
-    plant.title.toLowerCase().contains(keyword) ||
-        plant.description.toLowerCase().contains(keyword))
+            plant.title.toLowerCase().contains(keyword) ||
+            plant.description.toLowerCase().contains(keyword))
         .toList();
     print('THIS IS THE PLANT DETAILS: $searchedPlants');
     emit(state.copyWith(plants: searchedPlants));
@@ -30,19 +35,18 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
 
   // filtering plants
   void setFilteredPlants({
-    required List<Plant> plants,
     required PlantFilter plantFilter,
   }) {
     List<Plant> filteredPlants = [];
 
     switch (plantFilter) {
       case PlantFilter.name:
-        filteredPlants = [...plants]
+        filteredPlants = [...state.plants]
           ..sort((a, b) => a.title.compareTo(b.title));
         break;
 
       case PlantFilter.date:
-        filteredPlants = [...plants]..sort((a, b) => a.date.compareTo(b.date));
+        filteredPlants = [...state.plants]..sort((a, b) => a.date.compareTo(b.date));
         break;
     }
 
