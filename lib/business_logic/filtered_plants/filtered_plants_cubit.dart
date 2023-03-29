@@ -1,43 +1,52 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-
+import '../../constants/enums/plant_filter.dart';
 import '../../models/plant.dart';
-import '../../repositories/plant_repository.dart';
-import '../filter/filter_cubit.dart';
-import '../search_plant/search_cubit.dart';
 
 part 'filtered_plants_state.dart';
 
 class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
-  final PlantRepository plantRepository;
-  final FilterCubit filterCubit;
-  final SearchCubit searchCubit;
-  late StreamSubscription filterSubscription;
-  late StreamSubscription searchSubscription;
+  final List<Plant> plants;
 
-  FilteredPlantsCubit({
-    required this.filterCubit,
-    required this.searchCubit,
-    required this.plantRepository,
-  }) : super(FilteredPlantsState.initial()) {
+  FilteredPlantsCubit({required this.plants})
+      : super(FilteredPlantsState(plants: plants));
 
+  // searching for plants
+  void setSearchedPlants({
+    required List<Plant> plants,
+    required String keyword,
+  }) {
+    List<Plant> searchedPlants;
 
+    searchedPlants = plants
+        .where((plant) =>
+    plant.title.toLowerCase().contains(keyword) ||
+        plant.description.toLowerCase().contains(keyword))
+        .toList();
+    print('THIS IS THE PLANT DETAILS: $searchedPlants');
+    emit(state.copyWith(plants: searchedPlants));
+  }
 
+  // filtering plants
+  void setFilteredPlants({
+    required List<Plant> plants,
+    required PlantFilter plantFilter,
+  }) {
+    List<Plant> filteredPlants = [];
 
-    // listening to search cubit
-    filterSubscription = searchCubit.stream.listen((searchState) async {
-      List<Plant> plants =
-          await plantRepository.fetchSearchPlants(searchState.keyword);
-      emit(state.copyWith(plants: plants));
-    });
+    switch (plantFilter) {
+      case PlantFilter.name:
+        filteredPlants = [...plants]
+          ..sort((a, b) => a.title.compareTo(b.title));
+        break;
 
-    // listening to filter cubit
-    filterSubscription = filterCubit.stream.listen((filterState) async {
-      List<Plant> plants =
-          await plantRepository.fetchFilteredPlants(filterState.plantFilter);
-      emit(state.copyWith(plants: plants));
-    });
+      case PlantFilter.date:
+        filteredPlants = [...plants]..sort((a, b) => a.date.compareTo(b.date));
+        break;
+    }
+
+    print('THIS IS THE PLANT DETAILS: $filteredPlants');
+    emit(state.copyWith(plants: filteredPlants));
   }
 }

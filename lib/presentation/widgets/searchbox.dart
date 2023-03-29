@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../business_logic/search_plant/search_cubit.dart';
+import '../../business_logic/exports.dart';
 import '../../constants/color.dart';
+import '../../constants/enums/plant_filter.dart';
 import '../../constants/enums/status.dart';
 import '../../resources/styles_manager.dart';
 import '../../resources/values_manager.dart';
@@ -38,7 +39,14 @@ class _SearchBoxState extends State<SearchBox>
         context: context,
       );
     }
+    print(searchText.text);
     context.read<SearchCubit>().searchKeyword(searchText.text.trim());
+  }
+
+
+  void setFilter({required PlantFilter filter}){
+    print(filter);
+    context.read<FilterCubit>().changeFilter(filter);
   }
 
   void navigateToFilter(BuildContext context) {
@@ -128,40 +136,46 @@ class _SearchBoxState extends State<SearchBox>
                             color: primaryColor,
                           ),
                           isFilterFullyExpanded
-                              ? Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Name',
-                                      style: getMediumStyle(
-                                        color: fontColor,
+                              ? GestureDetector(
+                            onTap: ()=> setFilter(filter: PlantFilter.name),
+                            child: Wrap(
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Name',
+                                        style: getMediumStyle(
+                                          color: fontColor,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Icon(
-                                      Icons.unfold_more,
-                                      color: fontColor,
-                                    )
-                                  ],
-                                )
+                                      const SizedBox(width: 5),
+                                      const Icon(
+                                        Icons.unfold_more,
+                                        color: fontColor,
+                                      )
+                                    ],
+                                  ),
+                              )
                               : const SizedBox.shrink(),
                           isFilterFullyExpanded
-                              ? Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Date',
-                                      style: getMediumStyle(
-                                        color: fontColor,
+                              ? GestureDetector(
+                            onTap: ()=> setFilter(filter: PlantFilter.date),
+                                child: Wrap(
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Date',
+                                        style: getMediumStyle(
+                                          color: fontColor,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Icon(
-                                      Icons.unfold_more,
-                                      color: fontColor,
-                                    )
-                                  ],
-                                )
+                                      const SizedBox(width: 5),
+                                      const Icon(
+                                        Icons.unfold_more,
+                                        color: fontColor,
+                                      )
+                                    ],
+                                  ),
+                              )
                               : const SizedBox.shrink()
                         ],
                       ),

@@ -6,3 +6,5 @@ export 'profile/profile_cubit.dart';
 export 'plant/plant_cubit.dart';
 export 'task/task_cubit.dart';
 export 'search_plant/search_cubit.dart';
+export 'filtered_plants/filtered_plants_cubit.dart';
+export 'filter/filter_cubit.dart';

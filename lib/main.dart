@@ -112,10 +112,7 @@ class PlantApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => FilteredPlantsCubit(
-              filterCubit: context.read<FilterCubit>(),
-              searchCubit: context.read<SearchCubit>(),
-              plantRepository: context.read<PlantRepository>(),
-            ),
+                plants: context.read<PlantCubit>().state.plants),
           ),
         ],
         child: MaterialApp(

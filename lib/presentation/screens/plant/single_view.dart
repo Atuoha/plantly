@@ -195,7 +195,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen>
             const SizedBox(height: 5),
 
             Text(
-              DateFormat.yMEd().format(widget.plant['date']).toString(),
+              DateFormat.yMEd().format(widget.plant['date'].toDate()).toString(),
               style: getRegularStyle(
                 color: Colors.grey,
                 fontSize: FontSize.s13,

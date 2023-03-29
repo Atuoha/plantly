@@ -56,60 +56,61 @@ class PlantRepository {
     }
   }
 
-  Future<List<Plant>> fetchSearchPlants(String keyword) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final Query query = FirestoreRef.plantRef
-        .where('userId', isEqualTo: userId)
-        .where('title', isGreaterThanOrEqualTo: keyword);
-
-    try {
-      final QuerySnapshot querySnapshot = await query.get();
-      final List<DocumentSnapshot> documents = querySnapshot.docs;
-      List<Plant> plants = [];
-      for (var document in documents) {
-        var plant = Plant.fromJson(document);
-        plants.add(plant);
-      }
-      return plants;
-    } on FirebaseException catch (e) {
-      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
-    } on CustomError catch (e) {
-      throw CustomError(
-        errorMsg: e.code,
-        code: 'Firebase Exemption',
-        plugin: 'Firebase error/flutter',
-      );
-    }
-  }
-
-  Future<List<Plant>> fetchFilteredPlants(PlantFilter filter) async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    Query? query;
-    if (filter == PlantFilter.name) {
-      query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('title',descending: true);
-    } else {
-      query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('date',descending: true);
-    }
-
-    try {
-      final QuerySnapshot querySnapshot = await query.get();
-      final List<DocumentSnapshot> documents = querySnapshot.docs;
-      List<Plant> plants = [];
-      for (var document in documents) {
-        var plant = Plant.fromJson(document);
-        plants.add(plant);
-      }
-      return plants;
-    } on FirebaseException catch (e) {
-      throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
-    } on CustomError catch (e) {
-      throw CustomError(
-        errorMsg: e.code,
-        code: 'Firebase Exemption',
-        plugin: 'Firebase error/flutter',
-      );
-    }
-  }
+  // Future<List<Plant>> fetchSearchPlants(String keyword) async {
+  //   print('Coming here...');
+  //   final userId = FirebaseAuth.instance.currentUser!.uid;
+  //   final Query query = FirestoreRef.plantRef
+  //       .where('userId', isEqualTo: userId)
+  //       .where('title', isGreaterThanOrEqualTo: keyword);
+  //
+  //   try {
+  //     final QuerySnapshot querySnapshot = await query.get();
+  //     final List<DocumentSnapshot> documents = querySnapshot.docs;
+  //     List<Plant> plants = [];
+  //     for (var document in documents) {
+  //       var plant = Plant.fromJson(document);
+  //       plants.add(plant);
+  //     }
+  //     return plants;
+  //   } on FirebaseException catch (e) {
+  //     throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+  //   } on CustomError catch (e) {
+  //     throw CustomError(
+  //       errorMsg: e.code,
+  //       code: 'Firebase Exemption',
+  //       plugin: 'Firebase error/flutter',
+  //     );
+  //   }
+  // }
+  //
+  // Future<List<Plant>> fetchFilteredPlants(PlantFilter filter) async {
+  //   final userId = FirebaseAuth.instance.currentUser!.uid;
+  //   Query? query;
+  //   if (filter == PlantFilter.name) {
+  //     query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('title',descending: true);
+  //   } else {
+  //     query = FirestoreRef.plantRef.where('userId', isEqualTo: userId).orderBy('date',descending: true);
+  //   }
+  //
+  //   try {
+  //     final QuerySnapshot querySnapshot = await query.get();
+  //     final List<DocumentSnapshot> documents = querySnapshot.docs;
+  //     List<Plant> plants = [];
+  //     for (var document in documents) {
+  //       var plant = Plant.fromJson(document);
+  //       plants.add(plant);
+  //     }
+  //     return plants;
+  //   } on FirebaseException catch (e) {
+  //     throw CustomError(errorMsg: e.message!, code: e.code, plugin: e.plugin);
+  //   } on CustomError catch (e) {
+  //     throw CustomError(
+  //       errorMsg: e.code,
+  //       code: 'Firebase Exemption',
+  //       plugin: 'Firebase error/flutter',
+  //     );
+  //   }
+  // }
 
   Future<int> fetchTask({required String plantId}) async {
     final Query query =

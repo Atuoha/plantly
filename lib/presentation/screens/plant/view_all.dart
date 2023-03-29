@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plantly/presentation/presentation_export.dart';
@@ -16,6 +15,8 @@ import '../../components/plant_single_gridview.dart';
 import '../../widgets/loading.dart';
 import '../../widgets/searchbox.dart';
 
+import 'package:plantly/business_logic/exports.dart';
+
 class ViewAllPlants extends StatefulWidget {
   const ViewAllPlants({Key? key}) : super(key: key);
 
@@ -29,15 +30,16 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
     getProfile();
     super.initState();
   }
-  String  userId = "";
+
+  String userId = "";
+
   void getProfile() {
-     userId = context.read<AuthBloc>().state.user!.uid;
+    userId = context.read<AuthBloc>().state.user!.uid;
     context.read<ProfileCubit>().fetchProfile(userId: userId);
   }
 
   @override
   Widget build(BuildContext context) {
-
     // plant stream
     Stream<QuerySnapshot> plantStream =
         FirestoreRef.plantRef.where('userId', isEqualTo: userId).snapshots();
@@ -91,76 +93,96 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            SearchBox(),
+            const SearchBox(),
             const SizedBox(height: 10),
-            StreamBuilder<QuerySnapshot>(
-              stream: plantStream,
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(
-                      'An error occurred!',
-                      style: getRegularStyle(
-                        color: primaryColor,
+            MultiBlocListener(
+              listeners: [
+
+                //
+                BlocListener<SearchCubit, SearchState>(
+                    listener: (context, state) {
+                  context.read<FilteredPlantsCubit>().setSearchedPlants(
+                      plants: context.read<PlantCubit>().state.plants,
+                      keyword: state.keyword);
+                }),
+
+
+                BlocListener<FilterCubit, FilterState>(
+                    listener: (context, state) {
+                  context.read<FilteredPlantsCubit>().setFilteredPlants(
+                      plants: context.read<PlantCubit>().state.plants,
+                      plantFilter: state.plantFilter);
+                })
+              ],
+              child: StreamBuilder<QuerySnapshot>(
+                stream: plantStream,
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'An error occurred!',
+                        style: getRegularStyle(
+                          color: primaryColor,
+                        ),
                       ),
-                    ),
-                  );
-                }
+                    );
+                  }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: LoadingWidget(size: 50));
-                }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: LoadingWidget(size: 50));
+                  }
 
-                if (snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(AssetManager.angryEmoji),
-                        Text(
-                          'Plants are empty!',
-                          style: getRegularStyle(
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(AssetManager.angryEmoji),
+                          Text(
+                            'Plants are empty!',
+                            style: getRegularStyle(
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
+                    );
+                  }
 
-                return Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 0.8,
-                    ),
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var plant = snapshot.data!.docs[index];
+                  return Expanded(
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        var plant = snapshot.data!.docs[index];
 
-                      // split this later
-                      return GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => SinglePlantScreen(
-                              plant: plant,
-                              plantDocId: plant.id,
+                        // split this later
+                        return GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SinglePlantScreen(
+                                plant: plant,
+                                plantDocId: plant.id,
+                              ),
                             ),
                           ),
-                        ),
-                        child: SinglePlantGridView(
-                          title: plant['title'],
-                          description: plant['description'],
-                          imgUrl: plant['imgUrl'],
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
+                          child: SinglePlantGridView(
+                            title: plant['title'],
+                            description: plant['description'],
+                            imgUrl: plant['imgUrl'],
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ),
