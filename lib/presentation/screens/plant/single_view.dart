@@ -130,7 +130,7 @@ class _SinglePlantScreenState extends State<SinglePlantScreen>
           ),
         ),
         title: Text(
-          'Your Plants',
+          widget.plant['title'],
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,

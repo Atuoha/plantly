@@ -112,79 +112,142 @@ class _ViewAllPlantsState extends State<ViewAllPlants> {
                       .setFilteredPlants(plantFilter: state.plantFilter);
                 })
               ],
-              child: StreamBuilder<QuerySnapshot>(
-                stream: plantStream,
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'An error occurred!',
-                        style: getRegularStyle(
-                          color: primaryColor,
+              child: context.watch<FilteredPlantsCubit>().plants.isEmpty
+                  ? const Center(child: LoadingWidget(size: 50))
+                  : Expanded(
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 0.8,
                         ),
-                      ),
-                    );
-                  }
+                        itemCount: context
+                            .watch<FilteredPlantsCubit>()
+                            .state
+                            .plants
+                            .length,
+                        itemBuilder: (context, index) {
+                          var plant = context
+                              .read<FilteredPlantsCubit>()
+                              .state
+                              .plants[index];
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: LoadingWidget(size: 50));
-                  }
-
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(AssetManager.angryEmoji),
-                          Text(
-                            'Plants are empty!',
-                            style: getRegularStyle(
-                              color: Colors.grey,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }
-
-                  return Expanded(
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 0.8,
-                      ),
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        var plant = snapshot.data!.docs[index];
-
-                        // split this later
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => SinglePlantScreen(
-                                plant: plant,
-                                plantDocId: plant.id,
+                          if (context
+                              .watch<FilteredPlantsCubit>()
+                              .state
+                              .plants
+                              .isEmpty) {
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(AssetManager.angryEmoji),
+                                  Text(
+                                    'Plants are empty!',
+                                    style: getRegularStyle(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
+                            );
+                          }
+
+                          // split this later
+                          return GestureDetector(
+                            // onTap: () => Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (context) => SinglePlantScreen(
+                            //       plant: plant,
+                            //       plantDocId: plant.id,
+                            //     ),
+                            //   ),
+                            // ),
+                            child: SinglePlantGridView(
+                              title: plant.title,
+                              description: plant.description,
+                              imgUrl: plant.imgUrl,
                             ),
-                          ),
-                          child: SinglePlantGridView(
-                            title: plant['title'],
-                            description: plant['description'],
-                            imgUrl: plant['imgUrl'],
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  );
-                },
-              ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 }
+
+// StreamBuilder<QuerySnapshot>(
+// stream: plantStream,
+// builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+// if (snapshot.hasError) {
+// return Center(
+// child: Text(
+// 'An error occurred!',
+// style: getRegularStyle(
+// color: primaryColor,
+// ),
+// ),
+// );
+// }
+//
+// if (snapshot.connectionState == ConnectionState.waiting) {
+// return const Center(child: LoadingWidget(size: 50));
+// }
+//
+// if (snapshot.data!.docs.isEmpty) {
+// return Center(
+// child: Column(
+// mainAxisAlignment: MainAxisAlignment.center,
+// children: [
+// Image.asset(AssetManager.angryEmoji),
+// Text(
+// 'Plants are empty!',
+// style: getRegularStyle(
+// color: Colors.grey,
+// ),
+// )
+// ],
+// ),
+// );
+// }
+//
+// return Expanded(
+// child: GridView.builder(
+// gridDelegate:
+// const SliverGridDelegateWithFixedCrossAxisCount(
+// crossAxisCount: 2,
+// crossAxisSpacing: 10,
+// mainAxisSpacing: 10,
+// childAspectRatio: 0.8,
+// ),
+// itemCount: snapshot.data!.docs.length,
+// itemBuilder: (context, index) {
+// var plant = snapshot.data!.docs[index];
+//
+// // split this later
+// return GestureDetector(
+// onTap: () => Navigator.of(context).push(
+// MaterialPageRoute(
+// builder: (context) => SinglePlantScreen(
+// plant: plant,
+// plantDocId: plant.id,
+// ),
+// ),
+// ),
+// child: SinglePlantGridView(
+// title: plant['title'],
+// description: plant['description'],
+// imgUrl: plant['imgUrl'],
+// ),
+// );
+// },
+// ),
+// );
+// },
+// ),

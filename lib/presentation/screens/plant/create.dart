@@ -160,7 +160,7 @@ class _CreatePlantScreenState extends State<CreatePlantScreen> {
           ),
         ),
         title: Text(
-          'Your Plants',
+          'Add Plants',
           style: getRegularStyle(
             color: fontColor,
             fontSize: FontSize.s25,

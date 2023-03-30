@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../constants/enums/plant_filter.dart';
+import '../../constants/enums/process_status.dart';
 import '../../models/plant.dart';
 
 part 'filtered_plants_state.dart';
@@ -10,11 +11,20 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
   final List<Plant> plants;
 
   FilteredPlantsCubit({required this.plants})
-      : super(FilteredPlantsState(plants: plants));
-
+      : super(
+          FilteredPlantsState(
+            plants: plants,
+            status: ProcessStatus.success,
+          ),
+        );
 
   void setPlants(List<Plant> plants) {
-    emit(state.copyWith(plants: plants));
+    emit(
+      state.copyWith(
+        plants: plants,
+        status: ProcessStatus.success,
+      ),
+    );
     print('FILTERED PLANTS: ${state.plants}');
   }
 
@@ -30,7 +40,12 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
             plant.description.toLowerCase().contains(keyword))
         .toList();
     print('THIS IS THE PLANT DETAILS: $searchedPlants');
-    emit(state.copyWith(plants: searchedPlants));
+    emit(
+      state.copyWith(
+        plants: searchedPlants,
+        status: ProcessStatus.success,
+      ),
+    );
   }
 
   // filtering plants
@@ -46,11 +61,17 @@ class FilteredPlantsCubit extends Cubit<FilteredPlantsState> {
         break;
 
       case PlantFilter.date:
-        filteredPlants = [...state.plants]..sort((a, b) => a.date.compareTo(b.date));
+        filteredPlants = [...state.plants]
+          ..sort((a, b) => a.date.compareTo(b.date));
         break;
     }
 
     print('THIS IS THE PLANT DETAILS: $filteredPlants');
-    emit(state.copyWith(plants: filteredPlants));
+    emit(
+      state.copyWith(
+        plants: filteredPlants,
+        status: ProcessStatus.success,
+      ),
+    );
   }
 }

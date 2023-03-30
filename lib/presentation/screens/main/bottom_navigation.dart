@@ -14,6 +14,10 @@ class BottomNavigationScreen extends StatefulWidget {
 
 class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   var currentPageIndex = 0;
+  bool isInit = false;
+
+
+
   final List<Widget> pages = const [
     HomeScreen(),
     ViewAllPlants(),
@@ -26,6 +30,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
     setState(() {
       currentPageIndex = index;
     });
+    assignPlants();
   }
 
   @override
